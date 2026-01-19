@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="142" height="142" viewBox="0 0 142 142" fill="none">
+  <!-- Outer dashed circle -->
+  <circle cx="71" cy="71" r="70.1815" stroke="#fff" stroke-width="0.554794" stroke-dasharray="7.21 7.21" />
+  
+  <!-- Arrow icon (centered) -->
+  <g transform="translate(57, 57)">
+    <g clip-path="url(#clip0_69_2448)">
+      <path d="M21 7L7 21" stroke="#fff" stroke-width="0.6" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M18.375 21H7V9.625" stroke="#fff" stroke-width="0.6" stroke-linecap="round" stroke-linejoin="round" />
+    </g>
+    <defs>
+      <clipPath id="clip0_69_2448">
+        <rect width="28" height="28" fill="white" />
+      </clipPath>
+    </defs>
+  </g>
+  
+  <!-- Text -->
+  <text x="71" y="95" text-anchor="middle" fill="#fff" font-family="Arial, sans-serif" font-size="10">Explore</text>
+  <text x="71" y="108" text-anchor="middle" fill="#fff" font-family="Arial, sans-serif" font-size="10">All Lots</text>
+</svg>
