@@ -5,6 +5,8 @@ import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import Landing from "./components/Pages/Home/Landing"
 import TodaysDeals from "./components/Pages/Home/TodaysDeals"
+import ExploreAllLots from "./components/Pages/Home/ExploreAllLots"
+import Category from "./components/Pages/Home/Category"
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -42,6 +44,8 @@ const page = () => {
         </div>
       </div>
       <TodaysDeals />
+      <Category />
+      <ExploreAllLots />
     </div>
   )
 }

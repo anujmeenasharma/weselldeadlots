@@ -1,12 +1,12 @@
 import ProductCard from "../../UiComponents/ProductCard"
 
-const TodaysDeals = () => {
+const ExploreAllLots = () => {
   return (
     <div className="h-screen w-full relative pt-[10vh] px-20">
-      <h1 className="text-6xl text-center pb-28">Today's Deals</h1>
+      <h1 className="text-6xl text-center pb-28">Explore All Lots</h1>
       <ProductCard />
     </div>
   )
 }
 
-export default TodaysDeals
+export default ExploreAllLots
