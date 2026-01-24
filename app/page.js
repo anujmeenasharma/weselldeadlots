@@ -3,10 +3,10 @@ import { useRef } from "react"
 import { useGSAP } from "@gsap/react"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
-import Landing from "./components/Pages/Home/Landing"
-import TodaysDeals from "./components/Pages/Home/TodaysDeals"
-import ExploreAllLots from "./components/Pages/Home/ExploreAllLots"
-import Category from "./components/Pages/Home/Category"
+import Landing from "@/components/Pages/Home/Landing"
+import TodaysDeals from "@/components/Pages/Home/TodaysDeals"
+import ExploreAllLots from "@/components/Pages/Home/ExploreAllLots"
+import Category from "@/components/Pages/Home/Category"
 
 gsap.registerPlugin(ScrollTrigger)
 
