@@ -1,4 +1,3 @@
-
 import { fetchArticle } from '@/lib/shopify';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -31,46 +30,74 @@ export default async function BlogPostPage({ params }) {
         );
     }
 
-    const formattedDate = new Date(article.publishedAt).toLocaleDateString('en-US', {
+    const formattedDate = new Date(article.publishedAt).toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: '2-digit',
         year: 'numeric',
-        month: 'long',
-        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
     });
 
     return (
-        <div className="bg-[#F3F3F3] min-h-screen pb-20">
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-32">
-                <Link href="/blogs" className="inline-flex items-center text-gray-600 hover:text-black mb-8 transition-colors">
-                    ← Back to all blogs
-                </Link>
+        <div className="min-h-screen">
+            {/* Hero Section with Background Image */}
+            <div className="relative h-[50vh] w-full">
+                {article.image && (
+                    <Image
+                        src={article.image.url}
+                        alt={article.image.altText || article.title}
+                        fill
+                        className="object-cover"
+                        priority
+                    />
+                )}
+                {/* Dark overlay */}
+                <div className="absolute inset-0 bg-black/60" />
+                
+                {/* Content overlay */}
+                <div className="relative h-full w-full px-6 sm:px-8 lg:px-12 flex flex-col justify-center">
+                    <Link 
+                        href="/blogs" 
+                        className="inline-flex items-center text-white hover:text-gray-200 mb-6 transition-colors text-lg"
+                    >
+                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        Back
+                    </Link>
+                    
+                    <div className="text-white text-lg mb-3 tracking-wide">
+                        Dead Stock Blog
+                    </div>
+                    
+                    <h1 className="text-white text-4xl sm:text-4xl lg:text-4xl font-bold leading-tight max-w-5xl">
+                        {article.title}
+                    </h1>
+                </div>
+            </div>
 
-                <article className="bg-white rounded-3xl p-6 sm:p-10 shadow-sm">
-                    <header className="mb-8">
-                        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-black mb-4 leading-tight">
-                            {article.title}
-                        </h1>
-                        <div className="text-gray-500 text-sm">
-                            Published on {formattedDate}
-                        </div>
-                    </header>
+            {/* White Content Section */}
+            <div className="bg-white">
+                <div className="w-[70%] px-6 sm:px-8 lg:px-12 py-16">
+                    {/* Published Date */}
+                    <div className="text-gray-600 text-base mb-12">
+                        Published on : {formattedDate}
+                    </div>
 
-                    {article.image && (
-                        <div className="relative w-full h-[300px] sm:h-[400px] md:h-[500px] mb-10 rounded-2xl overflow-hidden">
-                            <Image
-                                src={article.image.url}
-                                alt={article.image.altText || article.title}
-                                fill
-                                className="object-cover"
-                                priority
-                            />
-                        </div>
-                    )}
-
+                    {/* Article Content */}
                     <div
-                        className="prose prose-lg max-w-none text-gray-800 prose-headings:font-bold prose-a:text-blue-600 prose-img:rounded-xl"
+                        className="prose prose-lg max-w-none 
+                        prose-headings:text-gray-900 prose-headings:font-bold prose-headings:text-3xl prose-headings:mb-6 prose-headings:mt-12
+                        prose-p:text-gray-700 prose-p:text-lg prose-p:leading-relaxed prose-p:mb-6
+                        prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline
+                        prose-strong:text-gray-900 prose-strong:font-semibold
+                        prose-ul:text-gray-700 prose-ul:text-lg
+                        prose-ol:text-gray-700 prose-ol:text-lg
+                        [&>h2]:text-4xl [&>h2]:font-bold [&>h2]:text-gray-900 [&>h2]:mb-4 [&>h2]:mt-10
+                        [&>h3]:text-2xl [&>h3]:font-bold [&>h3]:text-gray-900 [&>h3]:mb-4 [&>h3]:mt-8"
                         dangerouslySetInnerHTML={{ __html: article.contentHtml }}
                     />
-                </article>
+                </div>
             </div>
         </div>
     );

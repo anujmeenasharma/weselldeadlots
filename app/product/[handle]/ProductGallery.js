@@ -16,9 +16,9 @@ export default function ProductGallery({ images, title }) {
     if (!images || images.length === 0) return null;
 
     return (
-        <div className="product-gallery space-y-4">
+        <div className="product-gallery space-y-3">
             {/* Main Slider */}
-            <div className="relative group rounded-3xl overflow-hidden bg-gray-100 border border-gray-200 aspect-square">
+            <div className="relative group h-[65vh] w-full rounded-3xl overflow-hidden bg-gray-100 border border-gray-200 aspect-square">
                 <Swiper
                     spaceBetween={10}
                     navigation={{

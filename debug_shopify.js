@@ -1,11 +1,11 @@
 const shopifyConfig = {
-    storeUrl: "738eda.myshopify.com",
-    accessToken: "f6558466e9d3ffd0edfeda79dedc938a",
-    apiVersion: "2024-04",
+  storeUrl: process.env.NEXT_PUBLIC_SHOPIFY_STORE_URL,
+  accessToken: process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN,
+  apiVersion: process.env.NEXT_PUBLIC_SHOPIFY_API_VERSION,
 };
 
 async function fetchCollections() {
-    const query = `
+  const query = `
     query {
       collections(first: 50) {
         edges {
@@ -25,25 +25,25 @@ async function fetchCollections() {
     }
   `;
 
-    try {
-        const response = await fetch(
-            `https://${shopifyConfig.storeUrl}/api/${shopifyConfig.apiVersion}/graphql.json`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-Shopify-Storefront-Access-Token": shopifyConfig.accessToken,
-                    Accept: "application/json",
-                },
-                body: JSON.stringify({ query }),
-            }
-        );
+  try {
+    const response = await fetch(
+      `https://${shopifyConfig.storeUrl}/api/${shopifyConfig.apiVersion}/graphql.json`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Shopify-Storefront-Access-Token": shopifyConfig.accessToken,
+          Accept: "application/json",
+        },
+        body: JSON.stringify({ query }),
+      }
+    );
 
-        const data = await response.json();
-        console.log(JSON.stringify(data, null, 2));
-    } catch (error) {
-        console.error("Error:", error);
-    }
+    const data = await response.json();
+    console.log(JSON.stringify(data, null, 2));
+  } catch (error) {
+    console.error("Error:", error);
+  }
 }
 
 fetchCollections();

@@ -6,7 +6,7 @@ import { useRouter, useSearchParams, useParams } from 'next/navigation';
 import { ChevronDown, ChevronRight, ChevronLeft, Search } from 'lucide-react';
 import { FaWhatsapp } from 'react-icons/fa';
 
-// --- Configuration & Constants ---
+
 const SHOPIFY_CONFIG = {
     storeUrl: "738eda.myshopify.com",
     accessToken: "f6558466e9d3ffd0edfeda79dedc938a",
@@ -15,7 +15,6 @@ const SHOPIFY_CONFIG = {
 
 const PRODUCTS_PER_PAGE = 25;
 
-// User defined category structure
 const CATEGORY_MAPPING = {
     "Electronic": [
         "Switch Gear",
@@ -66,7 +65,6 @@ const CATEGORY_MAPPING = {
     "Scrap": []
 };
 
-// --- Helper Functions ---
 function createCleanURL(text) {
     if (!text) return '';
     return text
@@ -103,11 +101,8 @@ async function shopifyFetch(query, variables = {}) {
     return data;
 }
 
-// --- Components ---
-
-const ProductCard = ({ product }) => {
+const ProductCard = ({ product: { node } }) => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
-    const node = product.node;
 
     if (!node) return null;
 
@@ -116,7 +111,6 @@ const ProductCard = ({ product }) => {
     const price = node.variants?.edges?.[0]?.node?.price?.amount || "0";
     const currency = node.variants?.edges?.[0]?.node?.price?.currencyCode || "AED";
 
-    // Metafields
     const getMetafield = (key) => {
         const field = node.metafields?.find(m => m && m.key === key);
         return field?.value;
@@ -210,13 +204,11 @@ const ProductCard = ({ product }) => {
     );
 };
 
-// --- Main Content Component ---
-export default function CategoriesMain() {
+export default function CategoriesPage() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const params = useParams(); // Get dynamic params
+    const params = useParams();
 
-    // State
     const [allShopifyCollections, setAllShopifyCollections] = useState([]);
     const [currentProducts, setCurrentProducts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -224,11 +216,8 @@ export default function CategoriesMain() {
     const [expandedGroups, setExpandedGroups] = useState({});
     const [error, setError] = useState(null);
 
-    // Determine active category from URL slug (clean URL) OR query param as fallback
-    // Handle /categories/[slug]
     const categorySlug = params?.slug ? decodeURIComponent(params.slug) : searchParams.get('category');
 
-    // Fetch ALL Collections
     const fetchAllCollections = useCallback(async () => {
         try {
             let allCols = [];
@@ -276,14 +265,12 @@ export default function CategoriesMain() {
         }
     }, []);
 
-    // Initial Data Load
     useEffect(() => {
         const init = async () => {
             setLoading(true);
             const cols = await fetchAllCollections();
             setAllShopifyCollections(cols);
 
-            // If no category selected, show all products
             if (!categorySlug) {
                 const all = cols.flatMap(c => c.node.products.edges);
                 const unique = Array.from(new Map(all.map(item => [item.node.id, item])).values());
@@ -294,7 +281,6 @@ export default function CategoriesMain() {
         init();
     }, [fetchAllCollections, categorySlug]);
 
-    // Handle Filtering based on URL and Collections
     useEffect(() => {
         if (allShopifyCollections.length === 0) return;
 
@@ -303,17 +289,12 @@ export default function CategoriesMain() {
             setDisplayLimit(PRODUCTS_PER_PAGE);
 
             if (categorySlug) {
-                // Match by slug (clean title)
                 const targetCollection = allShopifyCollections.find(c => createCleanURL(c.node.title) === categorySlug);
 
                 if (targetCollection) {
-                    // Update Products
                     setCurrentProducts(targetCollection.node.products.edges);
 
-                    // Auto-expand the parent group in sidebar
                     for (const [group, items] of Object.entries(CATEGORY_MAPPING)) {
-                        // Check if this collection (by name) is in this group (by name)
-                        // We match clean versions to be safe, or direct name if easy
                         const match = items.some(item => createCleanURL(item) === categorySlug);
                         if (match) {
                             setExpandedGroups(prev => ({ ...prev, [group]: true }));
@@ -325,7 +306,6 @@ export default function CategoriesMain() {
                     setCurrentProducts([]);
                 }
             } else if (!loading) {
-                // Reset to all
                 const all = allShopifyCollections.flatMap(c => c.node.products.edges);
                 const unique = Array.from(new Map(all.map(item => [item.node.id, item])).values());
                 setCurrentProducts(unique);
@@ -338,7 +318,6 @@ export default function CategoriesMain() {
     }, [categorySlug, allShopifyCollections]);
 
 
-    // Handlers
     const handleGroupToggle = (group) => {
         setExpandedGroups(prev => ({
             ...prev,
@@ -348,7 +327,6 @@ export default function CategoriesMain() {
 
     const handleCategoryClick = (categoryName) => {
         const clean = createCleanURL(categoryName);
-        // Use Dynamic Route
         router.push(`/categories/${clean}`);
     };
 
@@ -360,11 +338,10 @@ export default function CategoriesMain() {
     const displayedProducts = currentProducts.slice(0, displayLimit);
 
     return (
-        <div className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 lg:px-8 font-sans">
-            <div className="max-w-[1440px] mx-auto">
+        <div className="min-h-screen bg-gray-50 py-10 pt-[15vh] px-4 sm:px-6 lg:px-8 font-sans">
+            <div className="w-full mx-auto">
                 <div className="flex flex-col lg:flex-row gap-8">
-                    {/* Sidebar */}
-                    <aside className="w-full lg:w-64 flex-shrink-0">
+                    <aside className="w-full lg:w-96 flex-shrink-0 sticky top-32 h-fit">
                         <h2 className="text-xl font-bold text-gray-800 mb-6 px-1 flex justify-between items-center">
                             Categories
                             {categorySlug && (
@@ -384,11 +361,9 @@ export default function CategoriesMain() {
                                 All Products
                             </button>
 
-                            {/* Render Groups from Constant */}
                             {Object.entries(CATEGORY_MAPPING).map(([groupName, items]) => {
                                 const isExpanded = expandedGroups[groupName];
 
-                                // Check if any child is active
                                 const hasActiveChild = items.some(item => createCleanURL(item) === categorySlug);
 
                                 return (
@@ -405,7 +380,6 @@ export default function CategoriesMain() {
                                             />
                                         </button>
 
-                                        {/* Subcategories */}
                                         <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isExpanded ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
                                             <div className="pl-4 pr-2 pb-2 space-y-1 bg-gray-50/50 rounded-b-lg">
                                                 {items.map((item) => {
@@ -415,8 +389,8 @@ export default function CategoriesMain() {
                                                             key={item}
                                                             onClick={() => handleCategoryClick(item)}
                                                             className={`w-full text-left px-4 py-2 rounded-md text-xs transition-colors ${isActive
-                                                                    ? 'bg-blue-100 text-blue-700 font-semibold'
-                                                                    : 'text-gray-500 hover:text-[#1392f9] hover:bg-white'
+                                                                ? 'bg-blue-100 text-blue-700 font-semibold'
+                                                                : 'text-gray-500 hover:text-[#1392f9] hover:bg-white'
                                                                 }`}
                                                         >
                                                             {item}
@@ -431,7 +405,6 @@ export default function CategoriesMain() {
                         </div>
                     </aside>
 
-                    {/* Main Product Grid */}
                     <main className="flex-1">
                         {loading ? (
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
@@ -460,7 +433,6 @@ export default function CategoriesMain() {
                                     )}
                                 </div>
 
-                                {/* Load More */}
                                 {displayedProducts.length < currentProducts.length && (
                                     <div className="mt-12 flex justify-center">
                                         <button

@@ -2,165 +2,262 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Zap, Wrench, Settings, Home, Laptop, Anchor, ShoppingBag } from 'lucide-react';
+import { Zap, Wrench, Settings, Home, Laptop, Anchor, ShoppingBag, Recycle } from 'lucide-react';
+
+
 
 export default function Category() {
-  const categories = [
-    {
-      id: 'electrical',
-      name: 'Electrical & Automation',
-      icon: Zap,
-      items: [
-        {
-          title: 'SWITCH GEAR',
-          image: 'https://images.unsplash.com/photo-1621905251918-48416bd8575a?w=400&h=300&fit=crop',
-          link: '/category/switch-gear'
-        },
-        {
-          title: 'AUTOMATION & CONTROL EQUIPMENTS',
-          image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=300&fit=crop',
-          link: '/category/automation'
-        },
-        {
-          title: 'WIRES & CABLES',
-          image: 'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=400&h=300&fit=crop',
-          link: '/category/wires-cables'
-        },
-        {
-          title: 'SWITCHES & SOCKETS',
-          image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop',
-          link: '/category/switches-sockets'
-        },
-        {
-          title: 'BULBS & LIGHTING',
-          image: 'https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?w=400&h=300&fit=crop',
-          link: '/category/bulbs-lighting'
-        }
-      ]
-    },
-    {
-      id: 'tools',
-      name: 'Tools & Equipments',
-      icon: Wrench,
-      items: [
-        {
-          title: 'POWER TOOLS',
-          image: 'https://images.unsplash.com/photo-1530124566582-a618bc2615dc?w=400&h=300&fit=crop',
-          link: '/category/power-tools'
-        },
-        {
-          title: 'HAND TOOLS',
-          image: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=400&h=300&fit=crop',
-          link: '/category/hand-tools'
-        },
-        {
-          title: 'MEASURING TOOLS',
-          image: 'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=400&h=300&fit=crop',
-          link: '/category/measuring-tools'
-        }
-      ]
-    },
-    {
-      id: 'industrial',
-      name: 'Industrial Equipments & Components',
-      icon: Settings,
-      items: [
-        {
-          title: 'MOTORS & DRIVES',
-          image: 'https://images.unsplash.com/photo-1581092583537-20d51876f3e3?w=400&h=300&fit=crop',
-          link: '/category/motors-drives'
-        },
-        {
-          title: 'PUMPS & VALVES',
-          image: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=400&h=300&fit=crop',
-          link: '/category/pumps-valves'
-        },
-        {
-          title: 'BEARINGS & GEARS',
-          image: 'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=400&h=300&fit=crop',
-          link: '/category/bearings-gears'
-        }
-      ]
-    },
-    {
-      id: 'construction',
-      name: 'Construction & Building Material',
-      icon: Home,
-      items: [
-        {
-          title: 'CEMENT & CONCRETE',
-          image: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=400&h=300&fit=crop',
-          link: '/category/cement-concrete'
-        },
-        {
-          title: 'STEEL & METAL',
-          image: 'https://images.unsplash.com/photo-1581092583537-20d51876f3e3?w=400&h=300&fit=crop',
-          link: '/category/steel-metal'
-        },
-        {
-          title: 'TILES & FLOORING',
-          image: 'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=400&h=300&fit=crop',
-          link: '/category/tiles-flooring'
-        }
-      ]
-    },
-    {
-      id: 'technology',
-      name: 'Technology & Power Solution',
-      icon: Laptop,
-      items: [
-        {
-          title: 'GENERATORS',
-          image: 'https://images.unsplash.com/photo-1581092583537-20d51876f3e3?w=400&h=300&fit=crop',
-          link: '/category/generators'
-        },
-        {
-          title: 'UPS & INVERTERS',
-          image: 'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=400&h=300&fit=crop',
-          link: '/category/ups-inverters'
-        },
-        {
-          title: 'SOLAR PANELS',
-          image: 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=400&h=300&fit=crop',
-          link: '/category/solar-panels'
-        }
-      ]
-    },
-    {
-      id: 'maritime',
-      name: 'Maritime & Aviation',
-      icon: Anchor,
-      items: [
-        {
-          title: 'MARINE EQUIPMENT',
-          image: 'https://images.unsplash.com/photo-1581092583537-20d51876f3e3?w=400&h=300&fit=crop',
-          link: '/category/marine-equipment'
-        },
-        {
-          title: 'AVIATION PARTS',
-          image: 'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=400&h=300&fit=crop',
-          link: '/category/aviation-parts'
-        }
-      ]
-    },
-    {
-      id: 'consumer',
-      name: 'Consumers Goods & Lifestyle',
-      icon: ShoppingBag,
-      items: [
-        {
-          title: 'HOME APPLIANCES',
-          image: 'https://images.unsplash.com/photo-1581092583537-20d51876f3e3?w=400&h=300&fit=crop',
-          link: '/category/home-appliances'
-        },
-        {
-          title: 'FURNITURE',
-          image: 'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=400&h=300&fit=crop',
-          link: '/category/furniture'
-        }
-      ]
-    }
-  ];
+const categories = [
+  {
+    id: 'electrical',
+    name: 'Electrical & Automation',
+    icon: Zap,
+    items: [
+      {
+        title: 'SWITCH GEAR',
+        image: '/images/categories/e1.webp',
+        link: '/category/switch-gear'
+      },
+      {
+        title: 'AUTOMATION & CONTROL EQUIPMENTS',
+        image: '/images/categories/e2.webp',
+        link: '/category/automation-control'
+      },
+      {
+        title: 'WIRES & CABLES',
+        image: '/images/categories/e3.webp',
+        link: '/category/wires-cables'
+      },
+      {
+        title: 'SWITCH & SOCKETS',
+        image: '/images/categories/e4.webp',
+        link: '/category/switch-sockets'
+      },
+      {
+        title: 'ELECTRONICS & LIGHTING',
+        image: '/images/categories/e5.webp',
+        link: '/category/electronics-lighting'
+      }
+    ]
+  },
+
+  {
+    id: 'tools',
+    name: 'Tools & Equipments',
+    icon: Wrench,
+    items: [
+      {
+        title: 'HAND TOOLS',
+        image: '/images/categories/to1.webp',
+        link: '/category/hand-tools'
+      },
+      {
+        title: 'POWER TOOLS',
+        image: '/images/categories/to2.webp',
+        link: '/category/power-tools'
+      },
+      {
+        title: 'CUTTING TOOLS',
+        image: '/images/categories/to3.webp',
+        link: '/category/cutting-tools'
+      },
+      {
+        title: 'MEASURING TOOLS',
+        image: '/images/categories/to4.webp',
+        link: '/category/measuring-tools'
+      },
+      {
+        title: 'FASTENING TOOLS',
+        image: '/images/categories/to5.webp',
+        link: '/category/fastening-tools'
+      }
+    ]
+  },
+
+  {
+    id: 'industrial',
+    name: 'Industrial Equipments & Components',
+    icon: Settings,
+    items: [
+      {
+        title: 'MACHINERY',
+        image: '/images/categories/i1.webp',
+        link: '/category/machinery'
+      },
+      {
+        title: 'BEARINGS',
+        image: '/images/categories/i2.webp',
+        link: '/category/bearings'
+      },
+      {
+        title: 'HYDRAULIC COMPONENTS',
+        image: '/images/categories/i3.webp',
+        link: '/category/hydraulic-components'
+      },
+      {
+        title: 'MOTORS',
+        image: '/images/categories/i4.webp',
+        link: '/category/motors'
+      },
+      {
+        title: 'GENERATORS',
+        image: '/images/categories/i5.webp',
+        link: '/category/generators'
+      }
+    ]
+  },
+
+  {
+    id: 'construction',
+    name: 'Construction & Building Material',
+    icon: Home,
+    items: [
+      {
+        title: 'HVAC SYSTEMS',
+        image: '/images/categories/co1.webp',
+        link: '/category/hvac-systems'
+      },
+      {
+        title: 'FIRE & SAFETY',
+        image: '/images/categories/co2.webp',
+        link: '/category/fire-safety'
+      },
+      {
+        title: 'BUILDING MATERIALS',
+        image: '/images/categories/co3.webp',
+        link: '/category/building-materials'
+      },
+      {
+        title: 'PLUMBING SYSTEMS',
+        image: '/images/categories/co4.webp',
+        link: '/category/plumbing-systems'
+      },
+      {
+        title: 'CONSTRUCTION TOOLS & EQUIPMENTS',
+        image: '/images/categories/co5.webp',
+        link: '/category/construction-tools'
+      }
+    ]
+  },
+
+  {
+    id: 'technology',
+    name: 'Technology & Power Solution',
+    icon: Laptop,
+    items: [
+      {
+        title: 'IT EQUIPMENTS',
+        image: '/images/categories/t1.webp',
+        link: '/category/it-equipments'
+      },
+      {
+        title: 'BATTERIES',
+        image: '/images/categories/t2.webp',
+        link: '/category/batteries'
+      },
+      {
+        title: 'NETWORKING DEVICES',
+        image: '/images/categories/t3.webp',
+        link: '/category/networking-devices'
+      },
+      {
+        title: 'DATA STORAGE',
+        image: '/images/categories/t4.webp',
+        link: '/category/data-storage'
+      }
+    ]
+  },
+
+  {
+    id: 'maritime',
+    name: 'Maritime & Aviation',
+    icon: Anchor,
+    items: [
+      {
+        title: 'OIL & GAS EQUIPMENTS',
+        image: '/images/categories/m1.webp',
+        link: '/category/oil-gas'
+      },
+      {
+        title: 'MARINE SUPPLIES',
+        image: '/images/categories/m2.webp',
+        link: '/category/marine-supplies'
+      },
+      {
+        title: 'AEROSPACE & AIRCRAFT MATERIALS',
+        image: '/images/categories/m3.webp',
+        link: '/category/aerospace-materials'
+      }
+    ]
+  },
+
+  {
+    id: 'consumer',
+    name: 'Consumers Goods & Lifestyle',
+    icon: ShoppingBag,
+    items: [
+      {
+        title: 'GARMENTS',
+        image: '/images/categories/c1.webp',
+        link: '/category/garments'
+      },
+      {
+        title: 'COSMETICS & PERSONAL CARECARE',
+        image: '/images/categories/c2.webp',
+        link: '/category/cosmetics'
+      },
+      {
+        title: 'TOYS & GAMES',
+        image: '/images/categories/c3.webp',
+        link: '/category/toys-games'
+      },
+      {
+        title: 'KIDS ESSENTIALS',
+        image: '/images/categories/c4.webp',
+        link: '/category/kids-essentials'
+      },
+      {
+        title: 'FOOTWEAR',
+        image: '/images/categories/c5.webp',
+        link: '/category/footwear'
+      }
+    ]
+  },
+
+  {
+    id: 'scrap',
+    name: 'Recycleable materials',
+    icon: Recycle,
+    items: [
+      {
+        title: 'GARMENTS',
+        image: '/images/categories/c1.webp',
+        link: '/category/scrap-garments'
+      },
+      {
+        title: 'COSMETICS & PERSONAL CARE',
+        image: '/images/categories/c2.webp',
+        link: '/category/scrap-cosmetics'
+      },
+      {
+        title: 'TOYS & GAMES',
+        image: '/images/categories/c3.webp',
+        link: '/category/scrap-toys'
+      },
+      {
+        title: 'KIDS ESSENTIALS',
+        image: '/images/categories/c4.webp',
+        link: '/category/scrap-kids'
+      },
+      {
+        title: 'FOOTWEAR',
+        image: '/images/categories/c5.webp',
+        link: '/category/scrap-footwear'
+      }
+    ]
+  }
+];
+
 
   const [activeCategory, setActiveCategory] = useState(categories[0]);
 
@@ -180,11 +277,10 @@ export default function Category() {
                   <button
                     key={category.id}
                     onClick={() => setActiveCategory(category)}
-                    className={`w-full flex cursor-pointer border-b items-center gap-3 px-4 py-6 transition-all duration-200 ${
-                      isActive
+                    className={`w-full flex cursor-pointer border-b items-center gap-3 px-4 py-6 transition-all duration-200 ${isActive
                         ? 'text-blue-800'
                         : 'text-black'
-                    }`}
+                      }`}
                   >
                     <Icon className={`w-5 h-5 ${isActive ? 'text-blue-800' : 'text-black'}`} />
                     <span className="text-left text">
@@ -212,7 +308,7 @@ export default function Category() {
                       alt={item.title}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                     />
-                    <div className="absolute inset-0 bg-black bg-opacity-40 group-hover:bg-opacity-50 transition-all duration-300"></div>
+                    <div className="absolute inset-0 bg-opacity-40 group-hover:bg-opacity-50 transition-all duration-300"></div>
                     <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black to-transparent">
                       <h4 className="text-white font-bold text-lg mb-1">
                         {item.title}
