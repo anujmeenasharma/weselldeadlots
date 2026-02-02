@@ -20,25 +20,26 @@ const ProductCarousel = ({ products }) => {
         <div className="w-full relative sm:px-10 group">
             <button
                 onClick={() => swiperRef?.slidePrev()}
-                className="absolute -left-10 top-1/2 -translate-y-1/2 z-10 p-2 cursor-pointer"
+                className="hidden md:block absolute -left-10 top-1/2 -translate-y-1/2 z-10 p-2 cursor-pointer hover:scale-110 transition-transform text-gray-800"
                 aria-label="Previous slide"
             >
-                <BsArrowLeft className="w-10 h-10" />
+                <BsArrowLeft className="w-8 h-8 md:w-10 md:h-10" />
             </button>
 
             <button
                 onClick={() => swiperRef?.slideNext()}
-                className="absolute -right-10 top-1/2 -translate-y-1/2 z-10 p-2 cursor-pointer"
+                className="hidden md:block absolute -right-10 top-1/2 -translate-y-1/2 z-10 p-2 cursor-pointer hover:scale-110 transition-transform text-gray-800"
                 aria-label="Next slide"
             >
-                <BsArrowRight className="w-10 h-10" />
+                <BsArrowRight className="w-8 h-8 md:w-10 md:h-10" />
             </button>
 
             <Swiper
                 onSwiper={setSwiperRef}
                 modules={[Navigation, Pagination, Autoplay]}
-                spaceBetween={5}
-                slidesPerView={1}
+                spaceBetween={15}
+                slidesPerView={1.2}
+                centeredSlides={true}
                 loop={true}
                 autoplay={{
                     delay: 5000,
@@ -48,14 +49,17 @@ const ProductCarousel = ({ products }) => {
                     640: {
                         slidesPerView: 2,
                         spaceBetween: 20,
+                        centeredSlides: false,
                     },
                     768: {
                         slidesPerView: 3,
                         spaceBetween: 30,
+                        centeredSlides: false,
                     },
                     1024: {
                         slidesPerView: 4.1,
                         spaceBetween: 40,
+                        centeredSlides: false,
                     },
                 }}
                 className="w-full py-10 px-2"

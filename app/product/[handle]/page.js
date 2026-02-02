@@ -129,7 +129,7 @@ export default async function ProductPage({ params }) {
             {recommendations.length > 0 && (
                 <div className="border-t border-gray-200 pt-16">
                     <h2 className="text-3xl font-bold mb-10 text-center">Similar Products</h2>
-                    <div className='flex flex-wrap gap-10 justify-center'>
+                    <div className='flex flex-wrap gap-10 justify-center px-5 lg:px-0'>
                         {recommendations.map((rec) => (
                             <ProductCard key={rec.id} product={rec} />
                         ))}

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, Suspense, useCallback } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter, useSearchParams, useParams } from 'next/navigation';
 import { ChevronDown, ChevronRight, ChevronLeft, Search } from 'lucide-react';
 import { FaWhatsapp } from 'react-icons/fa';
@@ -103,6 +104,7 @@ async function shopifyFetch(query, variables = {}) {
 
 const ProductCard = ({ product: { node } }) => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const router = useRouter();
 
     if (!node) return null;
 
@@ -120,10 +122,11 @@ const ProductCard = ({ product: { node } }) => {
     const miniQuantity = getMetafield("mini_quantity") || "N/A";
     const isUnitKg = getMetafield("is_unit_kg") === "True";
 
-    const productUrl = `/product.html?title=${createCleanURL(node.title)}`;
+    const productUrl = node.handle ? `/product/${node.handle}` : '#';
 
     const nextImage = (e) => {
         e.preventDefault();
+        e.stopPropagation();
         if (images.length > 0) {
             setCurrentImageIndex((prev) => (prev + 1) % images.length);
         }
@@ -131,6 +134,7 @@ const ProductCard = ({ product: { node } }) => {
 
     const prevImage = (e) => {
         e.preventDefault();
+        e.stopPropagation();
         if (images.length > 0) {
             setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
         }
@@ -139,14 +143,14 @@ const ProductCard = ({ product: { node } }) => {
     return (
         <div className="bg-white rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-100 flex flex-col h-full group/card">
             <div className="relative h-48 sm:h-56 w-full bg-gray-50 rounded-xl overflow-hidden mb-4 group/image">
-                <a href={productUrl} className="block w-full h-full relative">
+                <Link href={productUrl} className="block w-full h-full relative">
                     <Image
                         src={images[currentImageIndex] || '/images/placeholder.jpg'}
                         alt={imageAlt}
                         fill
                         className="object-contain p-2 transition-transform duration-500 group-hover/image:scale-105"
                     />
-                </a>
+                </Link>
 
                 {images.length > 1 && (
                     <>
@@ -167,11 +171,11 @@ const ProductCard = ({ product: { node } }) => {
             </div>
 
             <div className="flex flex-col flex-grow">
-                <a href={productUrl}>
+                <Link href={productUrl}>
                     <h3 className="font-bold text-gray-800 text-sm mb-3 line-clamp-2 min-h-[40px] hover:text-[#1392f9] transition-colors">
                         {node.title}
                     </h3>
-                </a>
+                </Link>
 
                 <div className="flex flex-wrap gap-2 mb-4">
                     <span className="bg-blue-50 text-blue-500 text-[10px] px-2 py-1 rounded-md font-medium whitespace-nowrap">
@@ -235,7 +239,7 @@ export default function CategoriesPage() {
                   products(first: 250) {
                     edges {
                       node {
-                        id, title, vendor, productType, description
+                        id, title, handle, vendor, productType, description
                         images(first: 5) { edges { node { url, altText } } }
                         variants(first: 1) { edges { node { price { amount, currencyCode } } } }
                         metafields(identifiers: [
@@ -318,6 +322,13 @@ export default function CategoriesPage() {
     }, [categorySlug, allShopifyCollections]);
 
 
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+    // Close sidebar on route change (mobile)
+    useEffect(() => {
+        setIsSidebarOpen(false);
+    }, [categorySlug]);
+
     const handleGroupToggle = (group) => {
         setExpandedGroups(prev => ({
             ...prev,
@@ -338,18 +349,29 @@ export default function CategoriesPage() {
     const displayedProducts = currentProducts.slice(0, displayLimit);
 
     return (
-        <div className="min-h-screen bg-gray-50 py-10 pt-[15vh] px-4 sm:px-6 lg:px-8 font-sans">
-            <div className="w-full mx-auto">
+        <div className="min-h-screen bg-gray-50 py-10 pt-28 lg:pt-[15vh] px-4 sm:px-6 lg:px-8 font-sans">
+            <div className="w-full max-w-[1920px] mx-auto">
                 <div className="flex flex-col lg:flex-row gap-8">
-                    <aside className="w-full lg:w-96 flex-shrink-0 sticky top-32 h-fit">
-                        <h2 className="text-xl font-bold text-gray-800 mb-6 px-1 flex justify-between items-center">
-                            Categories
+                    {/* Mobile Category Toggle */}
+                    <button
+                        className="lg:hidden w-full bg-white p-4 rounded-xl shadow-sm text-left font-bold text-gray-800 flex justify-between items-center"
+                        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                    >
+                        <span>{categorySlug ? 'Filtered Categories' : 'Browse Categories'}</span>
+                        <ChevronDown className={`transition-transform ${isSidebarOpen ? 'rotate-180' : ''}`} />
+                    </button>
+
+                    <aside className={`w-full lg:w-80 xl:w-96 flex-shrink-0 lg:sticky lg:top-32 h-fit transition-all duration-300 ${isSidebarOpen ? 'block' : 'hidden lg:block'}`}>
+                        <div className="lg:hidden mb-4"></div> {/* Spacer for mobile expansion */}
+
+                        <div className="hidden lg:flex justify-between items-center mb-6 px-1">
+                            <h2 className="text-xl font-bold text-gray-800">Categories</h2>
                             {categorySlug && (
                                 <button onClick={handleAllClick} className="text-xs text-blue-500 hover:text-blue-700 font-normal">
                                     Reset
                                 </button>
                             )}
-                        </h2>
+                        </div>
 
                         <div className="bg-white rounded-xl shadow-sm p-2 space-y-1">
                             <button
