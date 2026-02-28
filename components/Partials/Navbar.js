@@ -5,9 +5,11 @@ import Image from "next/image";
 import { CiSearch } from "react-icons/ci";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
+import SearchModal from "./SearchModal";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -43,16 +45,22 @@ const Navbar = () => {
 
         {/* Search & Mobile Menu Toggle */}
         <div className="flex items-center gap-4">
-          <div>
-            <span className="text-2xl cursor-pointer">
-              <CiSearch />
-            </span>
-          </div>
+          <button
+            onClick={() => setIsSearchModalOpen(true)}
+            className="text-2xl cursor-pointer hover:text-primary transition-colors flex items-center justify-center p-2"
+          >
+            <CiSearch />
+          </button>
           <button onClick={toggleMenu} className="lg:hidden text-2xl">
             {isMenuOpen ? <X /> : <Menu />}
           </button>
         </div>
       </div>
+
+      <SearchModal
+        isOpen={isSearchModalOpen}
+        onClose={() => setIsSearchModalOpen(false)}
+      />
 
       {/* Mobile Navigation Dropdown */}
       {isMenuOpen && (
