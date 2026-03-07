@@ -13,6 +13,14 @@ const nextConfig = {
       },
     ],
   },
+  async rewrites() {
+    return [
+      {
+        source: '/category/:slug',
+        destination: '/?category=:slug',
+      },
+    ]
+  },
 };
 
 export default nextConfig;

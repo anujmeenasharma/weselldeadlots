@@ -48,6 +48,9 @@ const page = () => {
                 .then(() => {
                     setSuccessMessage('Message sent successfully!');
                     form.reset();
+                    if (typeof window.fbq === 'function') {
+                        window.fbq('track', 'Lead');
+                    }
                     setTimeout(() => setSuccessMessage(""), 5000);
                 })
                 .catch((error) => {

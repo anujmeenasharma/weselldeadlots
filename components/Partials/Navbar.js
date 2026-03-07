@@ -23,21 +23,26 @@ const Navbar = () => {
 
   return (
     <>
-      <div className="h-[8vh] w-[95%] md:w-[90%] fixed top-5 left-1/2 -translate-x-1/2 flex items-center justify-between px-6 md:px-10 rounded-full drop-shadow-sm bg-white z-50">
+      <div className="h-[8vh] w-[95%] md:w-[90vw] fixed top-5 left-1/2 -translate-x-1/2 flex items-center justify-between px-6 md:px-[4vw] rounded-full drop-shadow-sm bg-white z-50">
         <Link href="/" className="brandLogo">
-          <Image src="/brand.png" height={80} width={80} alt="brand logo" className="w-16 h-16 md:w-20 md:h-20 object-contain" />
+          <Image src="/brand.png" height={80} width={80} alt="brand logo" className="w-16 h-16 md:w-[6vw] md:h-[6vw] lg:w-[4vw] lg:h-[4vw] object-contain" />
         </Link>
 
         {/* Desktop Navigation */}
-        <div className="hidden lg:flex gap-10 items-center">
+        <div className="hidden lg:flex gap-[3vw] lg:gap-10 items-center">
           {navLinks.map((item, index) => (
-            <Link className="text-lg hover:text-primary transition-colors" key={index} href={item.href}>
+            <Link className="text-lg lg:text-base xl:text-lg hover:text-primary transition-colors" key={index} href={item.href}>
               {item.name}
             </Link>
           ))}
           <Link
             href="https://hashim8803-wbds.odoo.com/get-a-free-valuation-dead-lots"
-            className="bg-primary text-white px-6 py-2 rounded-full hover:bg-blue-600 transition-colors"
+            className="bg-primary text-white px-6 py-2 rounded-full lg:text-base xl:text-lg hover:bg-blue-600 transition-colors"
+            onClick={() => {
+              if (typeof window.fbq === 'function') {
+                window.fbq('trackCustom', 'SellWithUsClick');
+              }
+            }}
           >
             Sell with us
           </Link>
@@ -78,7 +83,12 @@ const Navbar = () => {
           <Link
             href="https://hashim8803-wbds.odoo.com/get-a-free-valuation-dead-lots"
             className="bg-primary text-white px-8 py-3 rounded-full text-xl"
-            onClick={() => setIsMenuOpen(false)}
+            onClick={() => {
+              setIsMenuOpen(false);
+              if (typeof window.fbq === 'function') {
+                window.fbq('trackCustom', 'SellWithUsClick');
+              }
+            }}
           >
             Sell with us
           </Link>

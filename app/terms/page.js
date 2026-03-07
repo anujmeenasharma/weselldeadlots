@@ -32,8 +32,8 @@ export default function Page() {
 
         {/* Introduction */}
         <p className="text-gray-700 text-base sm:text-lg mb-12 leading-relaxed">
-          By using We Buy Dead Stocks ("we," "our," or "us") and our services through{' '}
-          <span className="font-medium">www.webuydeadstocks.com</span> (the "Site"), you ("you" or "User") agree to these Terms and
+          By using WeSellDeadLots ("we," "our," or "us") and our services through{' '}
+          <span className="font-medium">www.weselldeadlots.com</span> (the "Site"), you ("you" or "User") agree to these Terms and
           Conditions.
         </p>
 

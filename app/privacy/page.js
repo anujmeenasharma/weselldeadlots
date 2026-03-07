@@ -31,9 +31,9 @@ export default function Privacy() {
 
         {/* Introduction */}
         <p className="text-gray-700 text-base sm:text-lg mb-12 leading-relaxed">
-          We Buy Dead Stocks values your privacy and is committed to protecting your personal
+          WeSellDeadLots values your privacy and is committed to protecting your personal
           information. This Privacy Policy outlines how we collect, use, and protect your data when you
-          visit our website, www.webuydeadstocks.com.
+          visit our website, www.weselldeadlots.com.
         </p>
 
         {/* Section 1: Who We Are */}

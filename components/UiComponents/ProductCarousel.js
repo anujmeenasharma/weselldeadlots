@@ -17,7 +17,7 @@ const ProductCarousel = ({ products }) => {
     }
 
     return (
-        <div className="w-full relative sm:px-10 group">
+        <div className="w-full relative md:px-10 group">
             <button
                 onClick={() => swiperRef?.slidePrev()}
                 className="hidden md:block absolute -left-10 top-1/2 -translate-y-1/2 z-10 p-2 cursor-pointer hover:scale-110 transition-transform text-gray-800"
@@ -38,8 +38,8 @@ const ProductCarousel = ({ products }) => {
                 onSwiper={setSwiperRef}
                 modules={[Navigation, Pagination, Autoplay]}
                 spaceBetween={15}
-                slidesPerView={1.2}
-                centeredSlides={true}
+                slidesPerView={1}
+                centeredSlides={false}
                 loop={true}
                 autoplay={{
                     delay: 5000,

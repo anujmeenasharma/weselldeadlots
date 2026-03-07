@@ -1,40 +1,82 @@
-import Image from "next/image"
-import Link from "next/link"
+"use client";
+
+import { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
 import { FaWhatsapp } from "react-icons/fa";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const ProductCard = ({ product }) => {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
   if (!product) return null;
 
   const { title, vendor, productType, variants, images, metafields, id } = product;
   const price = variants?.edges[0]?.node?.price?.amount || "0";
-  const imageUrl = images?.edges[0]?.node?.url || "/images/placeholder.webp";
-  const altText = images?.edges[0]?.node?.altText || title;
+  const allImages = images?.edges?.map(e => e.node.url) || [];
+  const imageUrl = allImages[currentImageIndex] || "/images/placeholder.webp";
+  const altText = images?.edges?.[0]?.node?.altText || title;
 
   const modelNo = metafields?.find(m => m?.key === "model_no")?.value || "N/A";
   const miniQuantity = metafields?.find(m => m?.key === "mini_quantity")?.value || "N/A";
   const isUnitKg = metafields?.find(m => m?.key === "is_unit_kg")?.value === "True";
   const unit = isUnitKg ? "KG" : "Pcs";
 
-
   const productId = id?.split("/").pop();
   const productUrl = typeof window !== 'undefined' ? `${window.location.origin}/product.html?id=${productId}` : "#";
   const whatsappMessage = `Hello, I want to buy ${title} with model number ${modelNo}. Here is the link of the product: ${productUrl}`;
   const whatsappLink = `https://wa.me/+971552748974?text=${encodeURIComponent(whatsappMessage)}`;
 
-
   const handle = product.handle;
 
+  const nextImage = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (allImages.length > 0) {
+      setCurrentImageIndex((prev) => (prev + 1) % allImages.length);
+    }
+  };
+
+  const prevImage = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (allImages.length > 0) {
+      setCurrentImageIndex((prev) => (prev - 1 + allImages.length) % allImages.length);
+    }
+  };
+
   return (
-    <div className="h-fit w-full sm:w-[20vw] drop-shadow-xl bg-white rounded-2xl overflow-hidden p-4 flex flex-col justify-between">
-      <Link href={handle ? `/product/${handle}` : '#'} className="block h-[25vh] w-full rounded-xl overflow-hidden relative cursor-pointer">
-        <Image
-          src={imageUrl}
-          fill
-          alt={altText}
-          className="object-cover"
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-        />
-      </Link>
+    <div className="h-fit w-full sm:w-[45vw] md:w-[27vw] lg:w-[20.5vw] drop-shadow-xl bg-white rounded-2xl overflow-hidden p-[3vw] md:p-[1.5vw] flex flex-col justify-between">
+      <div className="block h-[25vh] w-full rounded-xl overflow-hidden relative group/image">
+        <Link href={handle ? `/product/${handle}` : '#'} className="block w-full h-full relative">
+          <Image
+            src={imageUrl}
+            fill
+            alt={altText}
+            className="object-cover transition-transform duration-500 group-hover/image:scale-105"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          />
+        </Link>
+
+        {allImages.length > 1 && (
+          <>
+            <button
+              onClick={prevImage}
+              className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-1 rounded-full opacity-0 group-hover/image:opacity-100 transition-opacity z-10 cursor-pointer"
+              aria-label="Previous image"
+            >
+              <ChevronLeft size={20} />
+            </button>
+            <button
+              onClick={nextImage}
+              className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-1 rounded-full opacity-0 group-hover/image:opacity-100 transition-opacity z-10 cursor-pointer"
+              aria-label="Next image"
+            >
+              <ChevronRight size={20} />
+            </button>
+          </>
+        )}
+      </div>
       <div className="space-y-3 pt-5 pb-3">
         <Link href={handle ? `/product/${handle}` : '#'} className="block">
           <h1 className="font-semibold line-clamp-2 min-h-[3rem] hover:text-blue-600 transition-colors" title={title}>{title}</h1>

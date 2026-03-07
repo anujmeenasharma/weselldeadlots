@@ -37,9 +37,9 @@ const ExploreAllLots = () => {
   };
 
   return (
-    <div className="min-h-screen w-full relative pt-[15vh] pb-20 px-4 md:px-20">
-      <h1 className="text-4xl md:text-6xl text-center pb-10 md:pb-28">Explore All Lots</h1>
-      <div className="flex flex-wrap gap-10 justify-center">
+    <div className="min-h-screen w-full relative pt-[15vh] pb-20 px-4 md:px-[5vw] lg:px-[5vw]">
+      <h1 className="text-4xl md:text-[5vw] lg:text-5xl xl:text-6xl text-center pb-10 md:pb-[6vw]">Explore All Lots</h1>
+      <div className="flex flex-wrap gap-[4vw] lg:gap-[2vw] justify-center">
         {products.map((product, index) => (
           <ProductCard key={product.node?.id || index} product={product.node} />
         ))}
@@ -49,7 +49,7 @@ const ExploreAllLots = () => {
           <button
             onClick={loadMore}
             disabled={loading}
-            className="border-2 border-black rounded-lg text-lg font-bold py-3 px-10 hover:bg-black hover:text-white transition-colors disabled:opacity-50"
+            className="border-2 border-black rounded-lg text-lg md:text-[1.8vw] lg:text-[1.2vw] font-bold py-3 px-10 md:py-[1.2vw] md:px-[4vw] hover:bg-black hover:text-white transition-colors disabled:opacity-50"
           >
             {loading ? "Loading..." : "Load More"}
           </button>

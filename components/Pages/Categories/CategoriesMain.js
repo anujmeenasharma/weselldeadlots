@@ -216,11 +216,12 @@ export default function CategoriesPage() {
     const [allShopifyCollections, setAllShopifyCollections] = useState([]);
     const [currentProducts, setCurrentProducts] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [displayLimit, setDisplayLimit] = useState(PRODUCTS_PER_PAGE);
     const [expandedGroups, setExpandedGroups] = useState({});
     const [error, setError] = useState(null);
 
     const categorySlug = params?.slug ? decodeURIComponent(params.slug) : searchParams.get('category');
+    // Extract page from params (e.g. /categories/page/2) or default to 1
+    const currentPage = parseInt(params?.page || '1', 10);
 
     const fetchAllCollections = useCallback(async () => {
         try {
@@ -290,7 +291,6 @@ export default function CategoriesPage() {
 
         const applyFilters = async () => {
             setLoading(true);
-            setDisplayLimit(PRODUCTS_PER_PAGE);
 
             if (categorySlug) {
                 const targetCollection = allShopifyCollections.find(c => createCleanURL(c.node.title) === categorySlug);
@@ -346,7 +346,39 @@ export default function CategoriesPage() {
         setExpandedGroups({});
     };
 
-    const displayedProducts = currentProducts.slice(0, displayLimit);
+    const totalPages = Math.ceil(currentProducts.length / PRODUCTS_PER_PAGE);
+    const startIndex = (currentPage - 1) * PRODUCTS_PER_PAGE;
+    const endIndex = startIndex + PRODUCTS_PER_PAGE;
+    const displayedProducts = currentProducts.slice(startIndex, endIndex);
+
+    const handlePageChange = (newPage) => {
+        if (newPage < 1 || newPage > totalPages) return;
+
+        let pathname = '';
+        if (categorySlug) {
+            pathname = newPage === 1 ? `/categories/${categorySlug}` : `/categories/${categorySlug}/page/${newPage}`;
+        } else {
+            pathname = newPage === 1 ? '/categories' : `/categories/page/${newPage}`;
+        }
+
+        router.push(pathname);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const getPageNumbers = () => {
+        const pages = [];
+        let startPage = Math.max(1, currentPage - 2);
+        let endPage = Math.min(totalPages, startPage + 4);
+
+        if (endPage - startPage < 4) {
+            startPage = Math.max(1, endPage - 4);
+        }
+
+        for (let i = startPage; i <= endPage; i++) {
+            pages.push(i);
+        }
+        return pages;
+    };
 
     return (
         <div className="min-h-screen bg-gray-50 py-10 pt-28 lg:pt-[15vh] px-4 sm:px-6 lg:px-8 font-sans">
@@ -455,13 +487,35 @@ export default function CategoriesPage() {
                                     )}
                                 </div>
 
-                                {displayedProducts.length < currentProducts.length && (
-                                    <div className="mt-12 flex justify-center">
+                                {totalPages > 1 && (
+                                    <div className="mt-12 flex justify-center items-center space-x-2">
                                         <button
-                                            onClick={() => setDisplayLimit(prev => prev + PRODUCTS_PER_PAGE)}
-                                            className="bg-white border border-gray-200 text-gray-800 px-8 py-3 rounded-full text-sm font-bold tracking-wider hover:bg-gray-50 hover:shadow-lg transition-all"
+                                            onClick={() => handlePageChange(currentPage - 1)}
+                                            disabled={currentPage === 1}
+                                            className="p-2 rounded-full border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                                         >
-                                            LOAD MORE <span className="text-gray-400 font-normal ml-2">({displayedProducts.length} OF {currentProducts.length})</span>
+                                            <ChevronLeft size={20} />
+                                        </button>
+
+                                        {getPageNumbers().map(page => (
+                                            <button
+                                                key={page}
+                                                onClick={() => handlePageChange(page)}
+                                                className={`w-10 h-10 rounded-full font-semibold transition-all ${currentPage === page
+                                                    ? 'bg-blue-600 text-white shadow-md'
+                                                    : 'text-gray-600 hover:bg-gray-100'
+                                                    }`}
+                                            >
+                                                {page}
+                                            </button>
+                                        ))}
+
+                                        <button
+                                            onClick={() => handlePageChange(currentPage + 1)}
+                                            disabled={currentPage === totalPages}
+                                            className="p-2 rounded-full border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                        >
+                                            <ChevronRight size={20} />
                                         </button>
                                     </div>
                                 )}
