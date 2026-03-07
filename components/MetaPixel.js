@@ -1,9 +1,9 @@
 "use client";
 import { usePathname, useSearchParams } from "next/navigation";
 import Script from "next/script";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 
-export default function MetaPixel() {
+function MetaPixelInner() {
     const pathname = usePathname();
     const searchParams = useSearchParams();
     const [loaded, setLoaded] = useState(false);
@@ -40,5 +40,13 @@ export default function MetaPixel() {
                 />
             </noscript>
         </>
+    );
+}
+
+export default function MetaPixel() {
+    return (
+        <Suspense fallback={null}>
+            <MetaPixelInner />
+        </Suspense>
     );
 }
