@@ -4,7 +4,7 @@ import React, { useState, useEffect, Suspense, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, useSearchParams, useParams } from 'next/navigation';
-import { ChevronDown, ChevronRight, ChevronLeft, Search } from 'lucide-react';
+import { ChevronDown, ChevronRight, ChevronLeft, Search, Filter, X } from 'lucide-react';
 import { FaWhatsapp } from 'react-icons/fa';
 
 
@@ -170,7 +170,7 @@ const ProductCard = ({ product: { node } }) => {
                 )}
             </div>
 
-            <div className="flex flex-col flex-grow">
+            <div className="flex flex-col grow">
                 <Link href={productUrl}>
                     <h3 className="font-bold text-gray-800 text-sm mb-3 line-clamp-2 min-h-[40px] hover:text-[#1392f9] transition-colors">
                         {node.title}
@@ -219,6 +219,14 @@ export default function CategoriesPage() {
     const [expandedGroups, setExpandedGroups] = useState({});
     const [error, setError] = useState(null);
 
+    // Filter states
+    const [selectedBrands, setSelectedBrands] = useState([]);
+    const [selectedConditions, setSelectedConditions] = useState([]);
+    const [selectedMaterials, setSelectedMaterials] = useState([]);
+    
+    // Store price range bounds. Use null initially to signify picking the dynamic max.
+    const [priceRange, setPriceRange] = useState({ min: 0, max: null });
+
     const categorySlug = params?.slug ? decodeURIComponent(params.slug) : searchParams.get('category');
     // Extract page from params (e.g. /categories/page/2) or default to 1
     const currentPage = parseInt(params?.page || '1', 10);
@@ -243,10 +251,12 @@ export default function CategoriesPage() {
                         id, title, handle, vendor, productType, description
                         images(first: 5) { edges { node { url, altText } } }
                         variants(first: 1) { edges { node { price { amount, currencyCode } } } }
+                        tags
                         metafields(identifiers: [
                           {namespace: "custom", key: "model_no"},
                           {namespace: "custom", key: "mini_quantity"},
-                          {namespace: "custom", key: "is_unit_kg"}
+                          {namespace: "custom", key: "is_unit_kg"},
+                          {namespace: "custom", key: "material"}
                         ]) { key, value }
                       }
                     }
@@ -296,10 +306,15 @@ export default function CategoriesPage() {
                 const targetCollection = allShopifyCollections.find(c => createCleanURL(c.node.title) === categorySlug);
 
                 if (targetCollection) {
-                    setCurrentProducts(targetCollection.node.products.edges);
+                    const products = targetCollection.node.products.edges;
+                    setCurrentProducts(products);
+                    
+                    const maxP = Math.max(...products.map(p => parseFloat(p.node.variants?.edges?.[0]?.node?.price?.amount || 0)), 100);
+                    setPriceRange({ min: 0, max: maxP });
 
                     for (const [group, items] of Object.entries(CATEGORY_MAPPING)) {
-                        const match = items.some(item => createCleanURL(item) === categorySlug);
+                        const isGroupMatch = createCleanURL(group) === categorySlug;
+                        const match = items.some(item => createCleanURL(item) === categorySlug) || isGroupMatch;
                         if (match) {
                             setExpandedGroups(prev => ({ ...prev, [group]: true }));
                             break;
@@ -313,6 +328,9 @@ export default function CategoriesPage() {
                 const all = allShopifyCollections.flatMap(c => c.node.products.edges);
                 const unique = Array.from(new Map(all.map(item => [item.node.id, item])).values());
                 setCurrentProducts(unique);
+
+                const maxP = Math.max(...unique.map(p => parseFloat(p.node.variants?.edges?.[0]?.node?.price?.amount || 0)), 100);
+                setPriceRange({ min: 0, max: maxP });
             }
             setLoading(false);
         };
@@ -321,8 +339,64 @@ export default function CategoriesPage() {
 
     }, [categorySlug, allShopifyCollections]);
 
+    // Handle filter UI changes
+    const toggleFilter = (setState, value) => {
+        setState(prev => prev.includes(value) ? prev.filter(v => v !== value) : [...prev, value]);
+        // Reset to page 1 on filter
+        if (currentPage !== 1) {
+            let pathname = categorySlug ? `/categories/${categorySlug}` : '/categories';
+            router.push(pathname);
+        }
+    };
+
+    // Derived unique filter options based on current category products
+    const availableBrands = Array.from(new Set(currentProducts.map(p => p.node.vendor).filter(Boolean)));
+    const availableConditions = Array.from(new Set(currentProducts.map(p => p.node.productType).filter(Boolean)));
+    
+    // Extract materials from metafields and valid tags (those not starting with #)
+    const availableMaterials = Array.from(new Set(currentProducts.flatMap(p => {
+        const materialMeta = p.node.metafields?.find(m => m?.key === 'material')?.value;
+        const validTags = (p.node.tags || []).filter(tag => !tag.startsWith('#'));
+        
+        if (materialMeta) {
+            return [materialMeta, ...validTags];
+        }
+        return validTags;
+    }).filter(Boolean)));
+
+    // Calculate max price from available products
+    const maxAvailablePrice = Math.max(...currentProducts.map(p => parseFloat(p.node.variants?.edges?.[0]?.node?.price?.amount || 0)), 100);
+    const safeMax = priceRange.max === null ? maxAvailablePrice : priceRange.max;
+
+    // Apply active filters on top of category products
+    const filteredProducts = currentProducts.filter(item => {
+        const node = item.node;
+        const brandMatch = selectedBrands.length === 0 || selectedBrands.includes(node.vendor);
+        const conditionMatch = selectedConditions.length === 0 || selectedConditions.includes(node.productType);
+        
+        let materialMatch = true;
+        if (selectedMaterials.length > 0) {
+            const materialMeta = node.metafields?.find(m => m?.key === 'material')?.value;
+            const validTags = (node.tags || []).filter(tag => !tag.startsWith('#'));
+            
+            const itemMaterials = materialMeta ? [materialMeta, ...validTags] : validTags;
+            materialMatch = selectedMaterials.some(m => itemMaterials.includes(m));
+        }
+
+        let priceMatch = true;
+        const price = parseFloat(node.variants?.edges?.[0]?.node?.price?.amount || 0);
+
+        // Filter by the selected range bounds
+        if (price < priceRange.min || price > safeMax) {
+            priceMatch = false;
+        }
+
+        return brandMatch && conditionMatch && materialMatch && priceMatch;
+    });
+
 
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [isFilterSidebarOpen, setIsFilterSidebarOpen] = useState(false);
 
     // Close sidebar on route change (mobile)
     useEffect(() => {
@@ -346,10 +420,10 @@ export default function CategoriesPage() {
         setExpandedGroups({});
     };
 
-    const totalPages = Math.ceil(currentProducts.length / PRODUCTS_PER_PAGE);
+    const totalPages = Math.ceil(filteredProducts.length / PRODUCTS_PER_PAGE);
     const startIndex = (currentPage - 1) * PRODUCTS_PER_PAGE;
     const endIndex = startIndex + PRODUCTS_PER_PAGE;
-    const displayedProducts = currentProducts.slice(startIndex, endIndex);
+    const displayedProducts = filteredProducts.slice(startIndex, endIndex);
 
     const handlePageChange = (newPage) => {
         if (newPage < 1 || newPage > totalPages) return;
@@ -393,7 +467,7 @@ export default function CategoriesPage() {
                         <ChevronDown className={`transition-transform ${isSidebarOpen ? 'rotate-180' : ''}`} />
                     </button>
 
-                    <aside className={`w-full lg:w-80 xl:w-96 flex-shrink-0 lg:sticky lg:top-32 h-fit transition-all duration-300 ${isSidebarOpen ? 'block' : 'hidden lg:block'}`}>
+                    <aside className={`w-full lg:w-80 xl:w-96 shrink-0 lg:sticky lg:top-32 h-fit transition-all duration-300 ${isSidebarOpen ? 'block' : 'hidden lg:block'}`}>
                         <div className="lg:hidden mb-4"></div> {/* Spacer for mobile expansion */}
 
                         <div className="hidden lg:flex justify-between items-center mb-6 px-1">
@@ -417,14 +491,14 @@ export default function CategoriesPage() {
 
                             {Object.entries(CATEGORY_MAPPING).map(([groupName, items]) => {
                                 const isExpanded = expandedGroups[groupName];
-
+                                const isGroupActive = createCleanURL(groupName) === categorySlug;
                                 const hasActiveChild = items.some(item => createCleanURL(item) === categorySlug);
 
                                 return (
                                     <div key={groupName} className="flex flex-col">
                                         <button
                                             onClick={() => handleGroupToggle(groupName)}
-                                            className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-colors ${hasActiveChild ? 'text-blue-600 bg-blue-50/50' : 'text-gray-600 hover:bg-gray-50'
+                                            className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-colors ${isGroupActive || hasActiveChild ? 'text-blue-600 bg-blue-50/50' : 'text-gray-600 hover:bg-gray-50'
                                                 }`}
                                         >
                                             <span>{groupName}</span>
@@ -457,9 +531,25 @@ export default function CategoriesPage() {
                                 );
                             })}
                         </div>
+
                     </aside>
 
                     <main className="flex-1">
+                        <div className="flex justify-between items-center mb-6">
+                            <h1 className="text-2xl lg:text-3xl font-bold text-gray-800">
+                                {categorySlug ? categorySlug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : 'All Products'}
+                            </h1>
+                            {currentProducts.length > 0 && (
+                                <button
+                                    onClick={() => setIsFilterSidebarOpen(true)}
+                                    className="flex items-center gap-2 bg-white border border-gray-200 px-4 py-2 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-50 shadow-sm transition-colors"
+                                >
+                                    <Filter size={18} />
+                                    Filters
+                                </button>
+                            )}
+                        </div>
+                        
                         {loading ? (
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
                                 {[1, 2, 3, 4, 5, 6].map(i => (
@@ -524,6 +614,141 @@ export default function CategoriesPage() {
                     </main>
                 </div>
             </div>
+
+            {/* Right side filter sidebar overlay */}
+            <div 
+                className={`fixed inset-0 z-50 bg-black/50 transition-opacity duration-300 ${isFilterSidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`} 
+                onClick={() => setIsFilterSidebarOpen(false)} 
+            />
+
+            {/* Right side filter sidebar */}
+            <div className={`fixed top-0 right-0 h-full w-[85%] sm:w-96 bg-white z-50 shadow-2xl transition-transform duration-300 transform overflow-y-auto ${isFilterSidebarOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+                <div className="p-6">
+                    <div className="flex justify-between items-center mb-6 border-b pb-4">
+                        <h3 className="font-bold text-gray-800 text-xl">Filters</h3>
+                        <button onClick={() => setIsFilterSidebarOpen(false)} className="p-2 hover:bg-gray-100 rounded-full text-gray-500 transition-colors">
+                            <X size={20} />
+                        </button>
+                    </div>
+
+                    <div className="space-y-8">
+                        {/* Price Filter */}
+                        <div className="mb-8">
+                            <div className="flex justify-between items-center mb-6">
+                                <h4 className="text-sm font-semibold text-gray-700">Price Range (AED)</h4>
+                                <span className="text-sm font-bold text-[#1392f9]">{priceRange.min} - {safeMax}</span>
+                            </div>
+                            
+                            <div className="relative pt-1 pb-2 h-6">
+                                {/* Track Background */}
+                                <div className="absolute top-1/2 -translate-y-1/2 w-full h-1.5 bg-gray-200 rounded-lg" />
+                                
+                                {/* Active Track */}
+                                <div 
+                                    className="absolute top-1/2 -translate-y-1/2 h-1.5 bg-[#1392f9] rounded-lg pointer-events-none"
+                                    style={{
+                                        left: `${(priceRange.min / maxAvailablePrice) * 100}%`,
+                                        right: `${100 - (safeMax / maxAvailablePrice) * 100}%`
+                                    }}
+                                />
+
+                                {/* Min Thumb */}
+                                <input
+                                    type="range"
+                                    min="0"
+                                    max={maxAvailablePrice}
+                                    value={priceRange.min}
+                                    onChange={(e) => {
+                                        const val = Math.min(Number(e.target.value), safeMax - 1);
+                                        setPriceRange(prev => ({ ...prev, min: val }));
+                                        if (currentPage !== 1) router.push(categorySlug ? `/categories/${categorySlug}` : '/categories');
+                                    }}
+                                    className="absolute top-1/2 -translate-y-1/2 w-full h-1.5 bg-transparent appearance-none pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-[3px] [&::-webkit-slider-thumb]:border-[#1392f9] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:border-[3px] [&::-moz-range-thumb]:border-[#1392f9] [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:cursor-pointer z-10"
+                                />
+
+                                {/* Max Thumb */}
+                                <input
+                                    type="range"
+                                    min="0"
+                                    max={maxAvailablePrice}
+                                    value={safeMax}
+                                    onChange={(e) => {
+                                        const val = Math.max(Number(e.target.value), priceRange.min + 1);
+                                        setPriceRange(prev => ({ ...prev, max: val }));
+                                        if (currentPage !== 1) router.push(categorySlug ? `/categories/${categorySlug}` : '/categories');
+                                    }}
+                                    className="absolute top-1/2 -translate-y-1/2 w-full h-1.5 bg-transparent appearance-none pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-[3px] [&::-webkit-slider-thumb]:border-[#1392f9] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:border-[3px] [&::-moz-range-thumb]:border-[#1392f9] [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:cursor-pointer z-20"
+                                />
+                            </div>
+                            <div className="flex justify-between text-xs text-gray-500 mt-4 font-medium">
+                                <span>0 AED</span>
+                                <span>{maxAvailablePrice} AED</span>
+                            </div>
+                        </div>
+
+                        {/* Condition Filter */}
+                        {availableConditions.length > 0 && (
+                            <div>
+                                <h4 className="text-sm font-semibold text-gray-700 mb-3">Condition</h4>
+                                <div className="space-y-2 max-h-48 overflow-y-auto custom-scrollbar">
+                                    {availableConditions.map(cond => (
+                                        <label key={cond} className="flex items-center gap-2 cursor-pointer group">
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedConditions.includes(cond)}
+                                                onChange={() => toggleFilter(setSelectedConditions, cond)}
+                                                className="rounded text-[#1392f9] focus:ring-[#1392f9] w-4 h-4 cursor-pointer"
+                                            />
+                                            <span className="text-sm text-gray-600 group-hover:text-gray-900">{cond}</span>
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Brand / Vendor Filter */}
+                        {availableBrands.length > 0 && (
+                            <div>
+                                <h4 className="text-sm font-semibold text-gray-700 mb-3">Brand</h4>
+                                <div className="space-y-2 max-h-48 overflow-y-auto custom-scrollbar">
+                                    {availableBrands.map(brand => (
+                                        <label key={brand} className="flex items-center gap-2 cursor-pointer group">
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedBrands.includes(brand)}
+                                                onChange={() => toggleFilter(setSelectedBrands, brand)}
+                                                className="rounded text-[#1392f9] focus:ring-[#1392f9] w-4 h-4 cursor-pointer"
+                                            />
+                                            <span className="text-sm text-gray-600 group-hover:text-gray-900">{brand}</span>
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Material Filter */}
+                        {availableMaterials.length > 0 && (
+                            <div>
+                                <h4 className="text-sm font-semibold text-gray-700 mb-3">Material</h4>
+                                <div className="space-y-2 max-h-48 overflow-y-auto custom-scrollbar">
+                                    {availableMaterials.map(mat => (
+                                        <label key={mat} className="flex items-center gap-2 cursor-pointer group">
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedMaterials.includes(mat)}
+                                                onChange={() => toggleFilter(setSelectedMaterials, mat)}
+                                                className="rounded text-[#1392f9] focus:ring-[#1392f9] w-4 h-4 cursor-pointer"
+                                            />
+                                            <span className="text-sm text-gray-600 group-hover:text-gray-900">{mat}</span>
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+            {/* Custom scrollbar styles if not available, can rely on default but adding class as indicator */}
         </div>
     );
 }
