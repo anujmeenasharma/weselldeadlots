@@ -45,14 +45,14 @@ export default function Footer() {
                         </div>
 
                         {/* Quick Links */}
-                        <div className="flex flex-col items-center md:items-start lg:items-center">
+                        <div className="flex flex-col items-start lg:col-span-2">
                             <h3 className="text-2xl md:text-[3vw] lg:text-2xl xl:text-3xl mb-6 font-semibold drop-shadow-md">Quick Links</h3>
-                            <nav className="flex flex-col space-y-3 md:space-y-[1vw] lg:space-y-4 w-full items-center md:items-start lg:items-center">
+                            <nav className="flex flex-row flex-wrap justify-start gap-4 md:gap-6 w-full">
                                 {quickLinks.map((link) => (
                                     <Link
                                         key={link.name}
                                         href={link.href}
-                                        className="text-gray-200 hover:text-white transition-colors duration-200 text-base md:text-[1.8vw] lg:text-base font-medium drop-shadow-md"
+                                        className="text-gray-200 hover:text-white transition-colors duration-200 text-base md:text-[1.8vw] lg:text-base font-medium drop-shadow-md whitespace-nowrap"
                                         onClick={() => {
                                             if (link.name === 'Sell With Us' && typeof window.fbq === 'function') {
                                                 window.fbq('trackCustom', 'SellWithUsClick');
@@ -64,9 +64,6 @@ export default function Footer() {
                                 ))}
                             </nav>
                         </div>
-
-                        {/* Empty column to preserve the 3-column layout */}
-                        <div className="hidden lg:block"></div>
                     </div>
                 </div>
             </footer>
