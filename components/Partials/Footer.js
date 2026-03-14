@@ -29,7 +29,7 @@ export default function Footer() {
                 </div>
 
                 {/* Dark Overlay */}
-                <div className="absolute inset-0 bg-black/80 z-10 pointer-events-none"></div>
+                <div className="absolute inset-0 bg-black/90 z-10 pointer-events-none"></div>
 
                 <div className="relative w-full z-20 px-6 md:px-[5vw] lg:px-[5vw]">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-start">
@@ -38,7 +38,7 @@ export default function Footer() {
                             <div className="relative w-64 md:w-[28vw] lg:w-[20vw] h-28 md:h-[12vw] lg:h-[8vw]">
                                 <div className="flex items-center gap-2 h-full w-full">
                                     <div className="text-blue-400 text-2xl font-bold w-full h-full flex items-center">
-                                        <Image src="/main.svg" height={500} width={500} alt="brand logo" className="w-full h-full object-contain drop-shadow-lg" />
+                                        <Image src="/logo.png" height={500} width={500} alt="brand logo" className="w-full h-full object-contain drop-shadow-lg" />
                                     </div>
                                 </div>
                             </div>
