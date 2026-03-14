@@ -29,7 +29,7 @@ export default function Footer() {
                 </div>
 
                 {/* Dark Overlay */}
-                <div className="absolute inset-0 bg-black/90 z-10 pointer-events-none"></div>
+                <div className="absolute inset-0 bg-black/50 z-10 pointer-events-none"></div>
 
                 <div className="relative w-full z-20 px-6 md:px-[5vw] lg:px-[5vw]">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-start">
