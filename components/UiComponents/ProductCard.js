@@ -21,13 +21,13 @@ const ProductCard = ({ product }) => {
   const miniQuantity = metafields?.find(m => m?.key === "mini_quantity")?.value || "N/A";
   const isUnitKg = metafields?.find(m => m?.key === "is_unit_kg")?.value === "True";
   const unit = isUnitKg ? "KG" : "Pcs";
-
+  const handle = product.handle;
   const productId = id?.split("/").pop();
-  const productUrl = typeof window !== 'undefined' ? `${window.location.origin}/product.html?id=${productId}` : "#";
+  const productUrl = typeof window !== 'undefined' ? `${window.location.origin}/product/${handle}` : "#";
   const whatsappMessage = `Hello, I want to buy ${title} with model number ${modelNo}. Here is the link of the product: ${productUrl}`;
   const whatsappLink = `https://wa.me/+971552748974?text=${encodeURIComponent(whatsappMessage)}`;
 
-  const handle = product.handle;
+  
 
   const nextImage = (e) => {
     e.preventDefault();
