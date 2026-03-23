@@ -4,7 +4,8 @@ import Link from 'next/link';
 
 export async function generateMetadata({ params }) {
     const { slug } = await params;
-    const article = await fetchArticle(slug);
+    let article = await fetchArticle(slug);
+    if (!article) article = await fetchArticle(`blogs-${slug}`);
     if (!article) return { title: 'Article Not Found' };
 
     return {
@@ -15,7 +16,8 @@ export async function generateMetadata({ params }) {
 
 export default async function BlogPostPage({ params }) {
     const { slug } = await params;
-    const article = await fetchArticle(slug);
+    let article = await fetchArticle(slug);
+    if (!article) article = await fetchArticle(`blogs-${slug}`);
 
     if (!article) {
         return (

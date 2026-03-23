@@ -114,7 +114,8 @@ const BlogPage = () => {
                         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
                             {filteredBlogs.map((blog) => {
                                 const post = blog.node;
-                                const blogUrl = `/blogs/${post.handle}`;
+                                const cleanHandle = post.handle.startsWith('blogs-') ? post.handle.replace(/^blogs-/, '') : post.handle;
+                                const blogUrl = `/blogs/${cleanHandle}`;
 
                                 const imageUrl = post.image?.url || "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=2070&auto=format&fit=crop";
 
