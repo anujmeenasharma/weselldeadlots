@@ -227,9 +227,37 @@ export default function CategoriesPage() {
     // Store price range bounds. Use null initially to signify picking the dynamic max.
     const [priceRange, setPriceRange] = useState({ min: 0, max: null });
 
-    const categorySlug = params?.slug ? decodeURIComponent(params.slug) : searchParams.get('category');
-    // Extract page from params (e.g. /categories/page/2) or default to 1
-    const currentPage = parseInt(params?.page || '1', 10);
+    const getCategoryUrl = (slug) => {
+        if (!slug) return '/categories';
+        let parentClean = '';
+        for (const [group, items] of Object.entries(CATEGORY_MAPPING)) {
+            if (createCleanURL(group) === slug || items.some(item => createCleanURL(item) === slug)) {
+                parentClean = createCleanURL(group);
+                // If it IS a group, parentClean and slug are identical, just use `/categories/${parentClean}`
+                if (parentClean === slug) return `/categories/${parentClean}`;
+                break;
+            }
+        }
+        return parentClean ? `/categories/${parentClean}/${slug}` : `/categories/${slug}`;
+    };
+
+    const slugArray = params?.slug;
+    let categorySlug = searchParams.get('category');
+    let currentPage = parseInt(params?.page || '1', 10);
+
+    if (Array.isArray(slugArray)) {
+        if (slugArray.length >= 2 && slugArray[slugArray.length - 2] === 'page') {
+            currentPage = parseInt(slugArray[slugArray.length - 1], 10) || 1;
+            const catIndex = slugArray.length - 3;
+            if (catIndex >= 0) {
+                categorySlug = decodeURIComponent(slugArray[catIndex]);
+            }
+        } else {
+            categorySlug = decodeURIComponent(slugArray[slugArray.length - 1]);
+        }
+    } else if (typeof slugArray === 'string') {
+        categorySlug = decodeURIComponent(slugArray);
+    }
 
     const fetchAllCollections = useCallback(async () => {
         try {
@@ -344,8 +372,7 @@ export default function CategoriesPage() {
         setState(prev => prev.includes(value) ? prev.filter(v => v !== value) : [...prev, value]);
         // Reset to page 1 on filter
         if (currentPage !== 1) {
-            let pathname = categorySlug ? `/categories/${categorySlug}` : '/categories';
-            router.push(pathname);
+            router.push(getCategoryUrl(categorySlug));
         }
     };
 
@@ -412,7 +439,7 @@ export default function CategoriesPage() {
 
     const handleCategoryClick = (categoryName) => {
         const clean = createCleanURL(categoryName);
-        router.push(`/categories/${clean}`);
+        router.push(getCategoryUrl(clean));
     };
 
     const handleAllClick = () => {
@@ -428,12 +455,8 @@ export default function CategoriesPage() {
     const handlePageChange = (newPage) => {
         if (newPage < 1 || newPage > totalPages) return;
 
-        let pathname = '';
-        if (categorySlug) {
-            pathname = newPage === 1 ? `/categories/${categorySlug}` : `/categories/${categorySlug}/page/${newPage}`;
-        } else {
-            pathname = newPage === 1 ? '/categories' : `/categories/page/${newPage}`;
-        }
+        const baseUrl = getCategoryUrl(categorySlug);
+        let pathname = newPage === 1 ? baseUrl : (baseUrl === '/categories' ? `/categories/page/${newPage}` : `${baseUrl}/page/${newPage}`);
 
         router.push(pathname);
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -661,7 +684,7 @@ export default function CategoriesPage() {
                                     onChange={(e) => {
                                         const val = Math.min(Number(e.target.value), safeMax - 1);
                                         setPriceRange(prev => ({ ...prev, min: val }));
-                                        if (currentPage !== 1) router.push(categorySlug ? `/categories/${categorySlug}` : '/categories');
+                                        if (currentPage !== 1) router.push(getCategoryUrl(categorySlug));
                                     }}
                                     className="absolute top-1/2 -translate-y-1/2 w-full h-1.5 bg-transparent appearance-none pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-[3px] [&::-webkit-slider-thumb]:border-[#1392f9] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:border-[3px] [&::-moz-range-thumb]:border-[#1392f9] [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:cursor-pointer z-10"
                                 />
@@ -675,7 +698,7 @@ export default function CategoriesPage() {
                                     onChange={(e) => {
                                         const val = Math.max(Number(e.target.value), priceRange.min + 1);
                                         setPriceRange(prev => ({ ...prev, max: val }));
-                                        if (currentPage !== 1) router.push(categorySlug ? `/categories/${categorySlug}` : '/categories');
+                                        if (currentPage !== 1) router.push(getCategoryUrl(categorySlug));
                                     }}
                                     className="absolute top-1/2 -translate-y-1/2 w-full h-1.5 bg-transparent appearance-none pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-[3px] [&::-webkit-slider-thumb]:border-[#1392f9] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:border-[3px] [&::-moz-range-thumb]:border-[#1392f9] [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:cursor-pointer z-20"
                                 />

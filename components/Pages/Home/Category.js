@@ -18,27 +18,27 @@ export default function Category() {
         {
           title: 'SWITCH GEAR',
           image: '/images/categories/e1.webp',
-          link: '/categories/switch-gear'
+          link: '/categories/electronic/switch-gear'
         },
         {
           title: 'AUTOMATION & CONTROL EQUIPMENTS',
           image: '/images/categories/e2.webp',
-          link: '/categories/automation-control'
+          link: '/categories/electronic/automation-and-control-equipments'
         },
         {
           title: 'WIRES & CABLES',
           image: '/images/categories/e3.webp',
-          link: '/categories/wires-cables'
+          link: '/categories/electronic/wires-and-cables'
         },
         {
           title: 'SWITCH & SOCKETS',
           image: '/images/categories/e4.webp',
-          link: '/categories/switch-sockets'
+          link: '/categories/electronic/switch-and-sockets'
         },
         {
           title: 'ELECTRONICS & LIGHTING',
           image: '/images/categories/e5.webp',
-          link: '/categories/electronics-lighting'
+          link: '/categories/electronic/electronics-and-lighting'
         }
       ]
     },
@@ -51,27 +51,27 @@ export default function Category() {
         {
           title: 'HAND TOOLS',
           image: '/images/categories/to1.webp',
-          link: '/categories/hand-tools'
+          link: '/categories/tools/hand-tools'
         },
         {
           title: 'POWER TOOLS',
           image: '/images/categories/to2.webp',
-          link: '/categories/power-tools'
+          link: '/categories/tools/power-tools'
         },
         {
           title: 'CUTTING TOOLS',
           image: '/images/categories/to3.webp',
-          link: '/categories/cutting-tools'
+          link: '/categories/tools/cutting-tools'
         },
         {
           title: 'MEASURING TOOLS',
           image: '/images/categories/to4.webp',
-          link: '/categories/measuring-tools'
+          link: '/categories/tools/measuring-tools'
         },
         {
           title: 'FASTENING TOOLS',
           image: '/images/categories/to5.webp',
-          link: '/categories/fastening-tools'
+          link: '/categories/tools/fastening-tools'
         }
       ]
     },
@@ -84,27 +84,27 @@ export default function Category() {
         {
           title: 'MACHINERY',
           image: '/images/categories/i1.webp',
-          link: '/categories/machinery'
+          link: '/categories/industrial/machinery'
         },
         {
           title: 'BEARINGS',
           image: '/images/categories/i2.webp',
-          link: '/categories/bearings'
+          link: '/categories/industrial/bearings'
         },
         {
           title: 'HYDRAULIC COMPONENTS',
           image: '/images/categories/i3.webp',
-          link: '/categories/hydraulic-components'
+          link: '/categories/industrial/hydraulic-components'
         },
         {
           title: 'MOTORS',
           image: '/images/categories/i4.webp',
-          link: '/categories/motors'
+          link: '/categories/industrial/motors'
         },
         {
           title: 'GENERATORS',
           image: '/images/categories/i5.webp',
-          link: '/categories/generators'
+          link: '/categories/industrial/generators'
         }
       ]
     },
@@ -117,17 +117,17 @@ export default function Category() {
         {
           title: 'HVAC SYSTEMS',
           image: '/images/categories/co1.webp',
-          link: '/categories/hvac-systems'
+          link: '/categories/construction/hvac-systems'
         },
         {
           title: 'FIRE & SAFETY',
           image: '/images/categories/co2.webp',
-          link: '/categories/fire-safety'
+          link: '/categories/construction/fire-and-safety'
         },
         {
           title: 'BUILDING MATERIALS',
           image: '/images/categories/co3.webp',
-          link: '/categories/building-materials'
+          link: '/categories/construction/building-materials'
         },
         {
           title: 'PLUMBING SYSTEMS',
@@ -137,7 +137,7 @@ export default function Category() {
         {
           title: 'CONSTRUCTION TOOLS & EQUIPMENTS',
           image: '/images/categories/co5.webp',
-          link: '/categories/construction-tools'
+          link: '/categories/construction/construction-tools-and-equipments'
         }
       ]
     },
@@ -150,17 +150,17 @@ export default function Category() {
         {
           title: 'IT EQUIPMENTS',
           image: '/images/categories/t1.webp',
-          link: '/categories/it-equipments'
+          link: '/categories/technology/it-equipments'
         },
         {
           title: 'BATTERIES',
           image: '/images/categories/t2.webp',
-          link: '/categories/batteries'
+          link: '/categories/technology/batteries'
         },
         {
           title: 'NETWORKING DEVICES',
           image: '/images/categories/t3.webp',
-          link: '/categories/networking-devices'
+          link: '/categories/technology/networking-devices'
         },
         {
           title: 'DATA STORAGE',
@@ -178,17 +178,17 @@ export default function Category() {
         {
           title: 'OIL & GAS EQUIPMENTS',
           image: '/images/categories/m1.webp',
-          link: '/categories/oil-gas'
+          link: '/categories/energy/oil-and-gas-equipments'
         },
         {
           title: 'MARINE SUPPLIES',
           image: '/images/categories/m2.webp',
-          link: '/categories/marine-supplies'
+          link: '/categories/energy/marine-supplies'
         },
         {
           title: 'AEROSPACE & AIRCRAFT MATERIALS',
           image: '/images/categories/m3.webp',
-          link: '/categories/aerospace-materials'
+          link: '/categories/energy/aerospace-and-aircraft-materials'
         }
       ]
     },
@@ -201,27 +201,27 @@ export default function Category() {
         {
           title: 'GARMENTS',
           image: '/images/categories/c1.webp',
-          link: '/categories/garments'
+          link: '/categories/consumer/garments'
         },
         {
-          title: 'COSMETICS & PERSONAL CARECARE',
+          title: 'COSMETICS & PERSONAL CARE',
           image: '/images/categories/c2.webp',
-          link: '/categories/cosmetics'
+          link: '/categories/consumer/cosmetics-and-personal-care'
         },
         {
           title: 'TOYS & GAMES',
           image: '/images/categories/c3.webp',
-          link: '/categories/toys-games'
+          link: '/categories/consumer/toys-and-games'
         },
         {
           title: 'KIDS ESSENTIALS',
           image: '/images/categories/c4.webp',
-          link: '/categories/kids-essentials'
+          link: '/categories/consumer/kids-essentials'
         },
         {
           title: 'FOOTWEAR',
           image: '/images/categories/c5.webp',
-          link: '/categories/footwear'
+          link: '/categories/consumer/footwear'
         }
       ]
     },

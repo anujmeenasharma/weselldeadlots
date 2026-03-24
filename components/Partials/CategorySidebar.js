@@ -91,10 +91,22 @@ export default function CategorySidebar({ initialCategorySlug = '' }) {
             [group]: !prev[group]
         }));
     };
+    const getCategoryUrl = (slug) => {
+        if (!slug) return '/categories';
+        let parentClean = '';
+        for (const [group, items] of Object.entries(CATEGORY_MAPPING)) {
+            if (createCleanURL(group) === slug || items.some(item => createCleanURL(item) === slug)) {
+                parentClean = createCleanURL(group);
+                if (parentClean === slug) return `/categories/${parentClean}`;
+                break;
+            }
+        }
+        return parentClean ? `/categories/${parentClean}/${slug}` : `/categories/${slug}`;
+    };
 
     const handleCategoryClick = (categoryName) => {
         const clean = createCleanURL(categoryName);
-        router.push(`/categories/${clean}`);
+        router.push(getCategoryUrl(clean));
     };
 
     const handleAllClick = () => {
