@@ -2,6 +2,12 @@ import React from 'react';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
+export const metadata = {
+  alternates: {
+    canonical: '/terms'
+  }
+};
+
 export default function Page() {
   return (
     <div className="min-h-screen bg-white">

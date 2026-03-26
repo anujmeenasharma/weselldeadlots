@@ -13,6 +13,9 @@ export async function generateMetadata({ params }) {
     return {
         title: product.title,
         description: product.descriptionHtml?.replace(/<[^>]*>?/gm, '').substring(0, 160) || `Buy ${product.title} at We Sell Dead Lots`,
+        alternates: {
+            canonical: `/product/${handle}`,
+        },
     };
 }
 

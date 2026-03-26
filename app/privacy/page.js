@@ -1,6 +1,12 @@
 import React from 'react';
 import { ArrowLeft } from 'lucide-react';
 
+export const metadata = {
+  alternates: {
+    canonical: '/privacy'
+  }
+};
+
 export default function Privacy() {
   return (
     <div className="min-h-screen bg-white">

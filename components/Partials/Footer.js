@@ -38,7 +38,7 @@ export default function Footer() {
                             <div className="relative w-64 md:w-[28vw] lg:w-[20vw] h-28 md:h-[12vw] lg:h-[8vw]">
                                 <div className="flex items-center gap-2 h-full w-full">
                                     <div className="text-blue-400 text-2xl font-bold w-full h-full flex items-center">
-                                        <Image src="/wsdl.png" height={500} width={500} alt="brand logo" className="w-full h-full object-contain drop-shadow-lg" />
+                                        {/* <Image src="/wsdl.png" height={500} width={500} alt="brand logo" className="w-full h-full object-contain drop-shadow-lg" /> */}
                                     </div>
                                 </div>
                             </div>

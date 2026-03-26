@@ -15,13 +15,14 @@ import Script from "next/script";
 import MetaPixel from "@/components/MetaPixel";
 
 export const metadata = {
+  metadataBase: new URL("https://weselldeadlots.com"),
   title: "Wholesale Industrial Surplus UAE | WeSellDeadLots",
   description: "Shop discounted industrial surplus in UAE – tools, MRO, construction stock & more. Bulk deals for resellers, exporters, and contractors.",
-  alternates: {
-    canonical: "https://www.weselldeadlots.com/",
-    languages: {
-      "en-AE": "https://www.weselldeadlots.com/",
-    },
+  keywords: ["Industrial Surplus", "UAE", "Wholesale Tools", "MRO", "Electrical Materials", "Hardware Supplies", "WeSellDeadLots", "Surplus Inventory", "Used Industrial tools"],
+  publisher: "WeSellDeadLots",
+  robots: {
+    index: true,
+    follow: true,
   },
 };
 
