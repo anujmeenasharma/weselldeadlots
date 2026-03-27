@@ -54,6 +54,22 @@ const jsonLd = {
   ]
 };
 
+const serviceLd = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Wholesale Dead Lots & Surplus Inventory Sales",
+  "description": "Wholesale supplier of dead lots, surplus, and overstock inventory across multiple product categories, serving bulk buyers and businesses in the UAE.",
+  "provider": {
+    "@type": "Organization",
+    "name": "We Sell Dead Lots",
+    "url": "https://www.weselldeadlots.com/"
+  },
+  "areaServed": {
+    "@type": "Country",
+    "name": "United Arab Emirates"
+  }
+};
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
@@ -65,6 +81,10 @@ export default function RootLayout({ children }) {
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceLd) }}
         />
       </head>
       <body className={montserrat.variable}>

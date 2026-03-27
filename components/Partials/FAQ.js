@@ -102,8 +102,25 @@ const FAQ = () => {
         setOpenIndex(openIndex === index ? null : index);
     };
 
+    const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": faqs.map(faq => ({
+            "@type": "Question",
+            "name": faq.question,
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": faq.answer
+            }
+        }))
+    };
+
     return (
         <div className="w-full mt-12 pb-4 px-6 md:px-12 lg:px-20">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
             <h3 className="text-2xl font-semibold mb-6">FAQs</h3>
             <div className="space-y-4">
                 {faqs.map((faq, index) => (
