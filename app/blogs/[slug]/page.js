@@ -116,15 +116,17 @@ export default async function BlogPostPage({ params }) {
 
                     {/* Article Content */}
                     <div
-                        className="prose prose-lg max-w-none 
-                        prose-headings:text-gray-900 prose-headings:font-bold prose-headings:text-3xl prose-headings:mb-6 prose-headings:mt-12
-                        prose-p:text-gray-700 prose-p:text-lg prose-p:leading-relaxed prose-p:mb-6
+                        className="max-w-none 
+                        [&_h1]:text-gray-900 [&_h1]:font-bold [&_h1]:text-3xl [&_h1]:mb-6 [&_h1]:mt-12
+                        [&_h2]:text-4xl [&_h2]:font-bold [&_h2]:text-gray-900 [&_h2]:mb-4 [&_h2]:mt-10
+                        [&_h3]:text-2xl [&_h3]:font-bold [&_h3]:text-gray-900 [&_h3]:mb-4 [&_h3]:mt-8
+                        [&_h4]:text-xl [&_h4]:font-bold [&_h4]:text-gray-900 [&_h4]:mb-3 [&_h4]:mt-6
+                        [&_p]:text-gray-700 [&_p]:text-lg [&_p]:leading-relaxed [&_p]:mb-6
                         [&_a]:text-blue-600 [&_a]:underline hover:[&_a]:text-blue-800 [&_a]:cursor-pointer [&_a]:pointer-events-auto [&_a]:relative [&_a]:z-10
-                        prose-strong:text-gray-900 prose-strong:font-semibold
-                        prose-ul:text-gray-700 prose-ul:text-lg
-                        prose-ol:text-gray-700 prose-ol:text-lg
-                        [&>h2]:text-4xl [&>h2]:font-bold [&>h2]:text-gray-900 [&>h2]:mb-4 [&>h2]:mt-10
-                        [&>h3]:text-2xl [&>h3]:font-bold [&>h3]:text-gray-900 [&>h3]:mb-4 [&>h3]:mt-8"
+                        [&_strong]:text-gray-900 [&_strong]:font-semibold
+                        [&_ul]:text-gray-700 [&_ul]:text-lg [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-6
+                        [&_ol]:text-gray-700 [&_ol]:text-lg [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:mb-6
+                        [&_li]:text-gray-700 [&_li]:text-lg [&_li]:mb-2 [&_li]:leading-relaxed"
                         dangerouslySetInnerHTML={{ __html: article.contentHtml }}
                     />
                 </div>
