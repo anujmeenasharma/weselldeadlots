@@ -36,7 +36,7 @@ const Navbar = () => {
             </Link>
           ))}
           <Link
-            href="https://hashim8803-wbds.odoo.com/get-a-free-valuation-dead-lots"
+            href="/sell-with-us"
             className="bg-primary text-white px-6 py-2 rounded-full lg:text-base xl:text-lg hover:bg-blue-600 transition-colors"
             onClick={() => {
               if (typeof window.fbq === 'function') {
