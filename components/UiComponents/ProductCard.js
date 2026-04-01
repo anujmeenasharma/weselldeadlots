@@ -1,13 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { FaWhatsapp } from "react-icons/fa";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-const ProductCard = ({ product }) => {
+const ProductCard = ({ product, exactQuantity: propQuantity }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [fetchedQuantity, setFetchedQuantity] = useState(null);
+
+  const exactQuantity = propQuantity !== undefined ? propQuantity : fetchedQuantity;
 
   if (!product) return null;
 
@@ -18,7 +21,6 @@ const ProductCard = ({ product }) => {
   const altText = images?.edges?.[0]?.node?.altText || title;
 
   const modelNo = metafields?.find(m => m?.key === "model_no")?.value || "N/A";
-  const miniQuantity = metafields?.find(m => m?.key === "mini_quantity")?.value || "N/A";
   const isUnitKg = metafields?.find(m => m?.key === "is_unit_kg")?.value === "True";
   const unit = isUnitKg ? "KG" : "Pcs";
   const handle = product.handle;
@@ -27,7 +29,24 @@ const ProductCard = ({ product }) => {
   const whatsappMessage = `Hello, I want to buy ${title} with model number ${modelNo}. Here is the link of the product: ${productUrl}`;
   const whatsappLink = `https://wa.me/+971552748974?text=${encodeURIComponent(whatsappMessage)}`;
 
-  
+  useEffect(() => {
+    if (propQuantity !== undefined) return;
+    const variantGid = variants?.edges?.[0]?.node?.id;
+    if (!variantGid) return;
+    const variantId = variantGid.split("/").pop();
+    if (!variantId) return;
+    fetch('/api/inventory/batch', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ variantIds: [variantId] }),
+    })
+      .then(r => r.json())
+      .then(data => {
+        const qty = data?.quantities?.[variantId];
+        if (qty !== null && qty !== undefined) setFetchedQuantity(qty);
+      })
+      .catch(() => {});
+  }, [variants, propQuantity]);
 
   const nextImage = (e) => {
     e.preventDefault();
@@ -82,7 +101,7 @@ const ProductCard = ({ product }) => {
           <h1 className="font-semibold line-clamp-2 min-h-[3rem] hover:text-blue-600 transition-colors" title={title}>{title}</h1>
         </Link>
         <div className="flex flex-wrap gap-2 text-xs">
-          <span className="px-3 py-1 bg-blue-50 text-blue-500 rounded-full">Qty: {miniQuantity} {unit}</span>
+          <span className="px-3 py-1 bg-blue-50 text-blue-500 rounded-full">Qty: {exactQuantity !== null ? exactQuantity : "Checking..."} {unit}</span>
           <span className="px-3 py-1 bg-gray-50 text-gray-500 rounded-full">{vendor}</span>
           {modelNo !== "N/A" && <span className="px-3 py-1 bg-purple-50 text-purple-500 rounded-full">Model: {modelNo}</span>}
         </div>

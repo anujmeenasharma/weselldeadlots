@@ -102,7 +102,7 @@ async function shopifyFetch(query, variables = {}) {
     return data;
 }
 
-const ProductCard = ({ product: { node } }) => {
+const ProductCard = ({ product: { node }, exactQuantity }) => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const router = useRouter();
 
@@ -179,7 +179,7 @@ const ProductCard = ({ product: { node } }) => {
 
                 <div className="flex flex-wrap gap-2 mb-4">
                     <span className="bg-blue-50 text-blue-500 text-[10px] px-2 py-1 rounded-md font-medium whitespace-nowrap">
-                        Qty: {miniQuantity} {isUnitKg ? 'KG' : 'Pcs'}
+                        Qty: {exactQuantity !== null ? exactQuantity : "Checking..."} {isUnitKg ? 'KG' : 'Pcs'}
                     </span>
                     <span className="bg-blue-50 text-blue-500 text-[10px] px-2 py-1 rounded-md font-medium whitespace-nowrap">
                         Cond: {node.productType}
@@ -278,7 +278,7 @@ export default function CategoriesPage() {
                       node {
                         id, title, handle, vendor, productType, description
                         images(first: 5) { edges { node { url, altText } } }
-                        variants(first: 1) { edges { node { price { amount, currencyCode } } } }
+                        variants(first: 1) { edges { node { id, price { amount, currencyCode } } } }
                         tags
                         metafields(identifiers: [
                           {namespace: "custom", key: "model_no"},
@@ -452,6 +452,24 @@ export default function CategoriesPage() {
     const endIndex = startIndex + PRODUCTS_PER_PAGE;
     const displayedProducts = filteredProducts.slice(startIndex, endIndex);
 
+    const [inventoryMap, setInventoryMap] = useState({});
+
+    useEffect(() => {
+        if (displayedProducts.length === 0) return;
+        const variantIds = displayedProducts
+            .map(p => p.node.variants?.edges?.[0]?.node?.id?.split('/').pop())
+            .filter(Boolean);
+        if (variantIds.length === 0) return;
+        fetch('/api/inventory/batch', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ variantIds }),
+        })
+            .then(r => r.json())
+            .then(data => setInventoryMap(prev => ({ ...prev, ...data.quantities })))
+            .catch(() => {});
+    }, [displayedProducts]);
+
     const handlePageChange = (newPage) => {
         if (newPage < 1 || newPage > totalPages) return;
 
@@ -588,9 +606,11 @@ export default function CategoriesPage() {
                             <>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {displayedProducts.length > 0 ? (
-                                        displayedProducts.map((product) => (
-                                            <ProductCard key={product.node.id} product={product} />
-                                        ))
+                                        displayedProducts.map((product) => {
+                                            const variantId = product.node.variants?.edges?.[0]?.node?.id?.split('/').pop();
+                                            const qty = variantId != null ? inventoryMap[variantId] : undefined;
+                                            return <ProductCard key={product.node.id} product={product} exactQuantity={qty ?? null} />;
+                                        })
                                     ) : (
                                         <div className="col-span-full flex flex-col items-center justify-center py-20 text-gray-500">
                                             <Search size={48} className="text-gray-300 mb-4" />

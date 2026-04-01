@@ -2,7 +2,7 @@
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 import ProductCard from './ProductCard';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BsArrowLeft, BsArrowRight } from "react-icons/bs";
 
 import 'swiper/css';
@@ -11,6 +11,23 @@ import 'swiper/css/pagination';
 
 const ProductCarousel = ({ products }) => {
     const [swiperRef, setSwiperRef] = useState(null);
+    const [inventoryMap, setInventoryMap] = useState({});
+
+    useEffect(() => {
+        if (!products || products.length === 0) return;
+        const variantIds = products
+            .map(e => e.node?.variants?.edges?.[0]?.node?.id?.split('/').pop())
+            .filter(Boolean);
+        if (variantIds.length === 0) return;
+        fetch('/api/inventory/batch', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ variantIds }),
+        })
+            .then(r => r.json())
+            .then(data => setInventoryMap(data.quantities || {}))
+            .catch(() => {});
+    }, [products]);
 
     if (!products || products.length === 0) {
         return <div className="text-center w-full py-10">Loading products...</div>;
@@ -64,11 +81,15 @@ const ProductCarousel = ({ products }) => {
                 }}
                 className="w-full py-10 px-2"
             >
-                {products.map((edge) => (
-                    <SwiperSlide key={edge.node.id} className="flex justify-center pb-10 px-2">
-                        <ProductCard product={edge.node} />
-                    </SwiperSlide>
-                ))}
+                {products.map((edge) => {
+                    const variantId = edge.node?.variants?.edges?.[0]?.node?.id?.split('/').pop();
+                    const qty = variantId ? inventoryMap[variantId] : undefined;
+                    return (
+                        <SwiperSlide key={edge.node.id} className="flex justify-center pb-10 px-2">
+                            <ProductCard product={edge.node} exactQuantity={qty ?? null} />
+                        </SwiperSlide>
+                    );
+                })}
             </Swiper>
         </div>
     );
