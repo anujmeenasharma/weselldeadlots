@@ -9,9 +9,9 @@ import { FaWhatsapp } from 'react-icons/fa';
 
 
 const SHOPIFY_CONFIG = {
-    storeUrl: "738eda.myshopify.com",
-    accessToken: "f6558466e9d3ffd0edfeda79dedc938a",
-    apiVersion: "2024-04",
+    storeUrl: process.env.NEXT_PUBLIC_SHOPIFY_STORE_URL,
+    accessToken: process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN,
+    apiVersion: process.env.NEXT_PUBLIC_SHOPIFY_API_VERSION || "2024-04",
 };
 
 const PRODUCTS_PER_PAGE = 25;
