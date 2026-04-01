@@ -70,6 +70,11 @@ const ProductCard = ({ product, exactQuantity: propQuantity }) => {
   return (
     <div className="h-fit w-full sm:w-[45vw] md:w-[27vw] lg:w-[20.5vw] drop-shadow-xl bg-white rounded-2xl overflow-hidden p-[3vw] md:p-[1.5vw] flex flex-col justify-between">
       <div className="block h-[25vh] w-full rounded-xl overflow-hidden relative group/image">
+        {(productType && productType !== "N/A") && (
+          <div className="absolute top-3 left-3 z-10 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded shadow-md">
+            {productType === "Old" ? "Pre-Owned" : productType}
+          </div>
+        )}
         <Link href={handle ? `/product/${handle}` : '#'} className="block w-full h-full relative">
           <Image
             src={imageUrl}
@@ -105,7 +110,6 @@ const ProductCard = ({ product, exactQuantity: propQuantity }) => {
         </Link>
         <div className="flex flex-wrap gap-2 text-xs">
           <span className="px-3 py-1 bg-blue-50 text-blue-500 rounded-full">Qty: {exactQuantity !== null ? exactQuantity : "Checking..."} {unit}</span>
-          <span className="px-3 py-1 bg-blue-50 text-blue-500 rounded-full">Cond: {productType || "N/A"} </span>
           <span className="px-3 py-1 bg-gray-50 text-gray-500 rounded-full">{vendor}</span>
           {modelNo !== "N/A" && <span className="px-3 py-1 bg-purple-50 text-purple-500 rounded-full">Model: {modelNo}</span>}
         </div>

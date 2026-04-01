@@ -151,6 +151,11 @@ const ProductCard = ({ product: { node }, exactQuantity }) => {
                         className="object-contain p-2 transition-transform duration-500 group-hover/image:scale-105"
                     />
                 </Link>
+                {(node.productType && node.productType !== "N/A") && (
+                    <div className="absolute top-3 left-3 z-10 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded shadow-md">
+                        {node.productType === "Old" ? "Pre-Owned" : node.productType}
+                    </div>
+                )}
 
                 {images.length > 1 && (
                     <>
@@ -180,9 +185,6 @@ const ProductCard = ({ product: { node }, exactQuantity }) => {
                 <div className="flex flex-wrap gap-2 mb-4">
                     <span className="bg-blue-50 text-blue-500 text-[10px] px-2 py-1 rounded-md font-medium whitespace-nowrap">
                         Qty: {exactQuantity !== null ? exactQuantity : "Checking..."} {isUnitKg ? 'KG' : 'Pcs'}
-                    </span>
-                    <span className="bg-blue-50 text-blue-500 text-[10px] px-2 py-1 rounded-md font-medium whitespace-nowrap">
-                        Cond: {node.productType}
                     </span>
                     <span className="bg-blue-50 text-blue-500 text-[10px] px-2 py-1 rounded-md font-medium whitespace-nowrap">
                         Model: {modelNo}
