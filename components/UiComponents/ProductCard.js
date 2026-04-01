@@ -23,6 +23,9 @@ const ProductCard = ({ product, exactQuantity: propQuantity }) => {
   const modelNo = metafields?.find(m => m?.key === "model_no")?.value || "N/A";
   const isUnitKg = metafields?.find(m => m?.key === "is_unit_kg")?.value === "True";
   const unit = isUnitKg ? "KG" : "Pcs";
+  
+  // Debug log to ensure productType is being received
+  console.log("Card RENDER:", title, "-> Cond:", productType);
   const handle = product.handle;
   const productId = id?.split("/").pop();
   const productUrl = typeof window !== 'undefined' ? `${window.location.origin}/product/${handle}` : "#";
@@ -102,6 +105,7 @@ const ProductCard = ({ product, exactQuantity: propQuantity }) => {
         </Link>
         <div className="flex flex-wrap gap-2 text-xs">
           <span className="px-3 py-1 bg-blue-50 text-blue-500 rounded-full">Qty: {exactQuantity !== null ? exactQuantity : "Checking..."} {unit}</span>
+          <span className="px-3 py-1 bg-blue-50 text-blue-500 rounded-full">Cond: {productType || "N/A"} </span>
           <span className="px-3 py-1 bg-gray-50 text-gray-500 rounded-full">{vendor}</span>
           {modelNo !== "N/A" && <span className="px-3 py-1 bg-purple-50 text-purple-500 rounded-full">Model: {modelNo}</span>}
         </div>

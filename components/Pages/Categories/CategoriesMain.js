@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, Suspense, useCallback } from 'react';
+import React, { useState, useEffect, Suspense, useCallback, useMemo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, useSearchParams, useParams } from 'next/navigation';
@@ -451,15 +451,21 @@ export default function CategoriesPage() {
     const startIndex = (currentPage - 1) * PRODUCTS_PER_PAGE;
     const endIndex = startIndex + PRODUCTS_PER_PAGE;
     const displayedProducts = filteredProducts.slice(startIndex, endIndex);
-
     const [inventoryMap, setInventoryMap] = useState({});
 
-    useEffect(() => {
-        if (displayedProducts.length === 0) return;
-        const variantIds = displayedProducts
+    // Use variant IDs string as dependency to avoid infinite rendering loop
+    const variantIdsString = useMemo(() => {
+        return displayedProducts
             .map(p => p.node.variants?.edges?.[0]?.node?.id?.split('/').pop())
-            .filter(Boolean);
-        if (variantIds.length === 0) return;
+            .filter(Boolean)
+            .join(',');
+    }, [displayedProducts]);
+
+    useEffect(() => {
+        if (!variantIdsString) return;
+        
+        const variantIds = variantIdsString.split(',');
+        
         fetch('/api/inventory/batch', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -468,8 +474,7 @@ export default function CategoriesPage() {
             .then(r => r.json())
             .then(data => setInventoryMap(prev => ({ ...prev, ...data.quantities })))
             .catch(() => {});
-    }, [displayedProducts]);
-
+    }, [variantIdsString]);
     const handlePageChange = (newPage) => {
         if (newPage < 1 || newPage > totalPages) return;
 
