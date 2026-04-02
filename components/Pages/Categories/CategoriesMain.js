@@ -140,6 +140,20 @@ const ProductCard = ({ product: { node }, exactQuantity }) => {
         }
     };
 
+    const getConditionStyle = (type) => {
+        const t = type?.trim()?.toLowerCase() || "";
+        if (t === "new" || t === "both used & new") return "bg-green-600 text-white";
+        if (t === "new-open box" || t === "new - open box") return "bg-yellow-400 text-black";
+        if (t === "new-without box" || t === "new - without box") return "bg-sky-500 text-white";
+        if (t === "used" || t === "old" || t === "pre-owned") return "bg-red-600 text-white";
+        return "bg-gray-800 text-white";
+    };
+
+    const getDisplayCondition = (type) => {
+        if (type?.trim()?.toLowerCase() === "old") return "Pre-Owned";
+        return type;
+    };
+
     return (
         <div className="bg-white rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-100 flex flex-col h-full group/card">
             <div className="relative h-48 sm:h-56 w-full bg-gray-50 rounded-xl overflow-hidden mb-4 group/image">
@@ -152,8 +166,8 @@ const ProductCard = ({ product: { node }, exactQuantity }) => {
                     />
                 </Link>
                 {(node.productType && node.productType !== "N/A") && (
-                    <div className="absolute top-3 left-3 z-10 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded shadow-md">
-                        {node.productType === "Old" ? "Pre-Owned" : node.productType}
+                    <div className={`absolute top-3 left-3 z-10 text-xs font-bold px-3 py-1 rounded shadow-md ${getConditionStyle(node.productType)}`}>
+                        {getDisplayCondition(node.productType)}
                     </div>
                 )}
 

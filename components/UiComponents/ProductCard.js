@@ -24,6 +24,15 @@ const ProductCard = ({ product, exactQuantity: propQuantity }) => {
   const isUnitKg = metafields?.find(m => m?.key === "is_unit_kg")?.value === "True";
   const unit = isUnitKg ? "KG" : "Pcs";
   
+  const getConditionStyle = (type) => {
+    const t = type?.trim()?.toLowerCase() || "";
+    if (t === "new" || t === "both used & new") return "bg-green-600 text-white";
+    if (t === "new-open box" || t === "new - open box") return "bg-yellow-400 text-black";
+    if (t === "new-without box" || t === "new - without box") return "bg-sky-500 text-white";
+    if (t === "used" || t === "old" || t === "pre-owned") return "bg-red-600 text-white";
+    return "bg-gray-800 text-white"; // Fallback color
+  };
+
   // Debug log to ensure productType is being received
   console.log("Card RENDER:", title, "-> Cond:", productType);
   const handle = product.handle;
@@ -67,12 +76,17 @@ const ProductCard = ({ product, exactQuantity: propQuantity }) => {
     }
   };
 
+  const getDisplayCondition = (type) => {
+    if (type?.trim()?.toLowerCase() === "old") return "Pre-Owned";
+    return type;
+  };
+
   return (
     <div className="h-fit w-full sm:w-[45vw] md:w-[27vw] lg:w-[20.5vw] drop-shadow-xl bg-white rounded-2xl overflow-hidden p-[3vw] md:p-[1.5vw] flex flex-col justify-between">
       <div className="block h-[25vh] w-full rounded-xl overflow-hidden relative group/image">
         {(productType && productType !== "N/A") && (
-          <div className="absolute top-3 left-3 z-10 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded shadow-md">
-            {productType === "Old" ? "Pre-Owned" : productType}
+          <div className={`absolute top-3 left-3 z-10 text-xs font-bold px-3 py-1 rounded shadow-md ${getConditionStyle(productType)}`}>
+            {getDisplayCondition(productType)}
           </div>
         )}
         <Link href={handle ? `/product/${handle}` : '#'} className="block w-full h-full relative">
