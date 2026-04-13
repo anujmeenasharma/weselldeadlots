@@ -18,12 +18,22 @@ const Navbar = () => {
 
   const changeLanguage = (newLocale) => {
     if (newLocale === "ar" && !isArabic) {
-      document.cookie = "googtrans=/en/ar; path=/";
+      document.cookie = "googtrans=/en/ar; path=/; SameSite=Lax";
       window.location.href = `/arabic${pathname === "/" ? "" : pathname}`;
     } else if (newLocale === "en" && isArabic) {
-      document.cookie = "googtrans=/en/en; path=/";
+      // Expire the googtrans cookie on every possible path so Google Translate
+      // has no cached instruction to translate the page.
+      const expiry = "expires=Thu, 01 Jan 1970 00:00:00 UTC";
+      document.cookie = `googtrans=; ${expiry}; path=/`;
+      document.cookie = `googtrans=; ${expiry}; path=/arabic`;
+      document.cookie = `googtrans=; ${expiry}; path=/arabic/`;
+      // Some browsers also need the domain cleared explicitly
+      document.cookie = `googtrans=; ${expiry}; path=/; domain=${window.location.hostname}`;
+
       const newPath = pathname.replace(/^\/arabic/, "") || "/";
-      window.location.href = newPath;
+      // Cache-bust with a query param so the browser fetches a fresh response
+      // instead of serving a stale cached (translated) version.
+      window.location.href = `${newPath}?lang=en&_t=${Date.now()}`;
     }
   };
 

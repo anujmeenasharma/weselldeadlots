@@ -28,8 +28,9 @@ export function middleware(request) {
   // For all routes not mapped to /arabic, we assume English
   const response = NextResponse.next();
   response.headers.set('x-locale', 'en');
-  // We rely on the client-side Navbar to switch the cookie back to English when requested.
-  
+  // NOTE: Do NOT delete googtrans here — Next.js prefetches non-arabic routes
+  // even while the user is on /arabic, which would wipe the cookie mid-session.
+  // Cookie cleanup is handled client-side in Navbar.js changeLanguage().
   return response;
 }
 
