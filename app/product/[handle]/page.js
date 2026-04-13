@@ -24,9 +24,11 @@ async function fetchAdminInventory(variantId) {
     }
 }
 import Image from 'next/image';
-import Link from 'next/link';
+import Link from "@/components/AppLink";
 import ProductCard from '@/components/UiComponents/ProductCard';
 import ProductGallery from './ProductGallery';
+import ProductReviews from '@/components/UiComponents/ProductReviews';
+import { cookies } from "next/headers";
 
 export async function generateMetadata({ params }) {
     const { handle } = await params;
@@ -44,6 +46,9 @@ export async function generateMetadata({ params }) {
 
 export default async function ProductPage({ params }) {
     const { handle } = await params;
+    const cookieStore = await cookies();
+    const locale = cookieStore.get("NEXT_LOCALE")?.value || "en";
+    
     const product = await fetchProductByHandle(handle);
 
     if (!product) {
@@ -71,7 +76,18 @@ export default async function ProductPage({ params }) {
     const variantGid = product.variants?.edges[0]?.node?.id;
     const variantId = variantGid ? variantGid.split("/").pop() : null;
     const exactQuantity = await fetchAdminInventory(variantId);
-
+    
+    const rawProductId = product.id.split("/").pop();
+    const reviewsMetafield = product.metafields?.find(m => m?.key === "product_reviews")?.value;
+    let initialReviews = [];
+    if (reviewsMetafield) {
+        try {
+            initialReviews = JSON.parse(reviewsMetafield);
+            if (!Array.isArray(initialReviews)) initialReviews = [];
+        } catch (e) {
+            console.error("Failed to parse reviews", e);
+        }
+    }
 
     const isAvailable = product.availableForSale;
     const productUrl = `https://www.weselldeadlots.com/product/${handle}`;
@@ -93,24 +109,31 @@ export default async function ProductPage({ params }) {
 
                         <div className="space-y-2">
                             <p className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Price:</p>
-                            <h2 className="text-3xl font-bold text-gray-900">
+                            <h2 className="text-2xl font-bold text-gray-900">
                                 {price ? `${price.amount} ${price.currencyCode}` : 'Price on Request'}
                             </h2>
                         </div>
 
-                        <div className="space-y-1">
-                            <p className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Model No:</p>
-                            <p className="text-lg font-medium text-gray-800">{modelNo}</p>
+                        <div className="space-y-2">
+                            <p className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Availability:</p>
+                            <h2 className="text-2xl font-bold text-gray-900">
+                                {isAvailable ? (exactQuantity !== null ? `${exactQuantity} Available` : "In Stock") : "Out of Stock"} (Min: {miniQuantity} {unit})
+                            </h2>
                         </div>
 
-                        <div className="space-y-1">
+                        <div className="space-y-2">
                             <p className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Condition:</p>
-                            <p className="text-lg font-medium text-gray-800">Used</p>
+                            <h2 className="text-2xl font-bold text-gray-900">Used</h2>
                         </div>
 
-                        <div className="space-y-1">
+                        <div className="space-y-2">
+                            <p className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Model No:</p>
+                            <h2 className="text-2xl font-bold text-gray-900">{modelNo}</h2>
+                        </div>
+
+                        <div className="space-y-2">
                             <p className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Product Origin:</p>
-                            <p className="text-lg font-medium text-gray-800">{product.vendor || "N/A"}</p>
+                            <h2 className="text-2xl font-bold text-gray-900">{product.vendor || "N/A"}</h2>
                         </div>
 
                         <div className="space-y-2">
@@ -119,13 +142,6 @@ export default async function ProductPage({ params }) {
                                 className="prose text-gray-600 max-w-none text-sm leading-relaxed"
                                 dangerouslySetInnerHTML={{ __html: product.descriptionHtml }}
                             />
-                        </div>
-
-                        <div className="space-y-1">
-                            <p className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Availability:</p>
-                            <p className="text-lg font-medium text-gray-800">
-                                {isAvailable ? (exactQuantity !== null ? `${exactQuantity} Available` : "In Stock") : "Out of Stock"} (Min: {miniQuantity} {unit})
-                            </p>
                         </div>
 
                         {csvData && (
@@ -156,6 +172,12 @@ export default async function ProductPage({ params }) {
                 </div>
 
             </div>
+            
+            {/* Reviews Section */}
+            <div className="border-t border-gray-200 mt-10">
+                <ProductReviews productId={rawProductId} handle={handle} initialReviews={initialReviews} />
+            </div>
+
             {recommendations.length > 0 && (
                 <div className="border-t border-gray-200 pt-16">
                     <h2 className="text-3xl font-bold mb-10 text-center">Similar Products</h2>

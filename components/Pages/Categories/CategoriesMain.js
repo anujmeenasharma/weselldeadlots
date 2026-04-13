@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, Suspense, useCallback, useMemo } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
+import Link from "@/components/AppLink";
 import { useRouter, useSearchParams, useParams } from 'next/navigation';
 import { ChevronDown, ChevronRight, ChevronLeft, Search, Filter, X } from 'lucide-react';
 import { FaWhatsapp } from 'react-icons/fa';
@@ -17,54 +17,279 @@ const SHOPIFY_CONFIG = {
 const PRODUCTS_PER_PAGE = 25;
 
 const CATEGORY_MAPPING = {
-    "Electronic": [
-        "Switch Gear",
-        "Automation & Control Equipments",
-        "Wires & Cables",
-        "Switch & Sockets",
-        "Electronics & Lighting"
-    ],
-    "Tools": [
-        "Hand Tools",
-        "Power Tools",
-        "Cutting Tools",
-        "Measuring Tools",
-        "Fastening Tools"
-    ],
-    "Industrial": [
-        "Machinery",
-        "Bearings",
-        "Hydraulic Components",
-        "Motors",
-        "Generators"
-    ],
-    "Construction": [
-        "HVAC Systems",
-        "Fire & Safety",
-        "Building Materials",
-        "Plumbing System",
-        "Construction Tools & Equipments"
-    ],
-    "Technology": [
-        "IT Equipments",
-        "Batteries",
-        "Networking Devices",
-        "Data Storages"
-    ],
-    "Energy": [
-        "Oil & Gas Equipments",
-        "Marine Supplies",
-        "Aerospace & Aircraft Materials"
-    ],
-    "Consumer": [
-        "Garments",
-        "Cosmetics & Personal Care",
-        "Toys & Games",
-        "Kids Essentials",
-        "Footwear"
-    ],
-    "Scrap": []
+    "Building Material": {
+        "HVAC System": [
+            "Air Conditioning Unit",
+            "Ducting & Duct Accessories",
+            "Ventilation Fans",
+            "HVAC Accessories"
+        ],
+        "Fire & Safety": [
+            "Fire Extinguishers",
+            "Fire Alarm Systems",
+            "Smoke & Heat Detectors",
+            "Fire Sprinkler System",
+            "Personal Protective Equipment",
+            "Other Fire Safety"
+        ],
+        "Sanitary / Plumbing System": [
+            "PVC Pipes & Fittings",
+            "Valves",
+            "Water Pumps",
+            "Miscellaneous"
+        ],
+        "Hardware": [
+            "Abrasives"
+        ]
+    },
+    "Electrical": {
+        "Switchgear": [
+            "Low Voltage",
+            "High Voltage"
+        ],
+        "Automation & PLC": [
+            "PLC",
+            "HMI",
+            "Sensors",
+            "Drives",
+            "Control Components"
+        ],
+        "Cables & Wires": [
+            "Power Cable",
+            "Cables",
+            "Wires",
+            "Communication Cables",
+            "Accessories"
+        ],
+        "Switches & Sockets": [
+            "Switches",
+            "Sockets & Outlets",
+            "Accessories"
+        ],
+        "Lighting": [
+            "Indoor Lighting",
+            "Outdoor Lighting",
+            "Emergency & Safety",
+            "Specialty Lighting"
+        ],
+        "Electronics": [
+            "Kitchen Appliances",
+            "Laundry Appliances",
+            "Heating / Cooling Appliances",
+            "Entertainment Appliances",
+            "Personal Care Appliances",
+            "Other Appliances"
+        ]
+    },
+    "Tools": {
+        "Power Tools": [
+            "Drills",
+            "Saw",
+            "Other Power Tools"
+        ],
+        "Hand Tools": [
+            "Cutting Tools",
+            "Measuring Tools",
+            "Miscellaneous Tools"
+        ],
+        "Power Tools Accessories": [
+            "Accessories"
+        ],
+        "Other Tools": [
+            "Safety & Utility"
+        ]
+    },
+    "Industrial Equipment": {
+        "Machinery": [
+            "Manufacturing Machines",
+            "Processing Machinery",
+            "Packaging Machines",
+            "Other Machinery"
+        ],
+        "Bearings": [
+            "Ball Bearing",
+            "Roller Bearing",
+            "Mounted Bearing",
+            "Specialty Bearings"
+        ],
+        "Hydraulic Components": [
+            "Hydraulic Pump",
+            "Hydraulic Valves",
+            "Hydraulic Cylinders",
+            "Hydraulic Accessories"
+        ],
+        "Motors": [
+            "Electric Motors",
+            "Precision Motors",
+            "Specialized Motors"
+        ],
+        "Generators": [
+            "Fuel Generators",
+            "Portable Generators",
+            "Industrial Generators",
+            "Generator Components"
+        ]
+    },
+    "Oil & Gas": {
+        "Drilling Equipment": [
+            "Drilling Tools",
+            "Pipelines"
+        ],
+        "Valves & Flow Control": [
+            "Industrial Valves"
+        ],
+        "Pumps & Compressors": [
+            "Pumps",
+            "Compressors"
+        ],
+        "Measurement & Instrumentation": [
+            "Instrumentation"
+        ]
+    },
+    "Aerospace & Aircraft Material": {
+        "Aircraft Structural Material": [
+            "Metals",
+            "Composites"
+        ],
+        "Aircraft Fasteners": [
+            "Fasteners"
+        ],
+        "Aircraft Electrical Components": [
+            "Electrical Parts"
+        ],
+        "Aircraft Hydraulic System": [
+            "Hydraulic Components"
+        ],
+        "Aircraft Maintenance Material": [
+            "Maintenance Supplies"
+        ]
+    },
+    "Marine": {
+        "Marine Engine System": [
+            "Main Engine",
+            "Engine Components",
+            "Cooling System",
+            "Fuel System"
+        ],
+        "Marine Electrical System": [
+            "Marine Batteries",
+            "Navigational Lights",
+            "Electrical Panels",
+            "Marine Wiring"
+        ],
+        "Marine Navigation & Communication": [
+            "GPS System",
+            "Marine Radar",
+            "Communication System",
+            "Fish Finder"
+        ],
+        "Marine Safety Equipment": [
+            "Life Saving Equipment",
+            "Fire Safety",
+            "Emergency Equipment",
+            "Safety Gear"
+        ],
+        "Deck & Mooring Equipment": [
+            "Anchoring Equipment",
+            "Mooring Equipment",
+            "Deck Hardware",
+            "Marine Ropes & Cable"
+        ]
+    },
+    "Computers & IT": {
+        "Computers & Laptops": [
+            "Desktop Computers",
+            "Laptop Computers",
+            "Workstations",
+            "Mini Computers"
+        ],
+        "PC / Laptop Accessories": [
+            "Input Devices",
+            "Display Accessories",
+            "External Devices",
+            "Laptop Accessories"
+        ],
+        "Battery": [
+            "Laptop Batteries",
+            "UPS Battery",
+            "CMOS Batteries",
+            "Power Banks"
+        ],
+        "Networking Devices": [
+            "Routers",
+            "Network Switches",
+            "Wireless Devices",
+            "Network Accessories"
+        ],
+        "Data Storage": [
+            "Internal Storage",
+            "External Storage",
+            "Flash Storage",
+            "Backup Systems"
+        ]
+    },
+    "Consumer Goods": {
+        "Garments": [
+            "Men's Clothing",
+            "Women's Clothing",
+            "Kids Clothing",
+            "Seasonal Wear"
+        ],
+        "Cosmetics & Personal Care": [
+            "Skin Care",
+            "Hair Care",
+            "Makeup Products",
+            "Personal Hygiene"
+        ],
+        "Toys & Games": [
+            "Educational Toys",
+            "Action Toys",
+            "Outdoor Toys",
+            "Board Games"
+        ],
+        "Kids Essentials": [
+            "Baby Care Products",
+            "Feeding Products",
+            "Baby Gear",
+            "Baby Bedding"
+        ],
+        "Footwear": [
+            "Men's Footwear",
+            "Women's Footwear",
+            "Kids Footwear",
+            "Sports Footwear"
+        ]
+    }
 };
+
+const COLLECTION_ALIASES = {
+    "electrical": "electronic",
+    "switchgear": "switch-gear",
+    "automation-and-plc": "automation-and-control-equipments",
+    "cables-and-wires": "wires-and-cables",
+    "switches-and-sockets": "switch-and-sockets",
+    "lighting": "electronics-and-lighting",
+    
+    "industrial-equipment": "industrial",
+    
+    "building-material": "construction",
+    "hvac-system": "hvac-systems",
+    "sanitary-plumbing-system": "plumbing-system",
+    "hardware": "construction-tools-and-equipments",
+    
+    "computers-and-it": "technology",
+    "battery": "batteries",
+    "data-storage": "data-storages",
+    "pc-laptop-accessories": "it-equipments",
+    
+    "oil-and-gas": "oil-and-gas-equipments",
+    "marine": "marine-supplies",
+    "aerospace-and-aircraft-material": "aerospace-and-aircraft-materials",
+    
+    "consumer-goods": "consumer"
+};
+
+const lookupAlias = (slug) => COLLECTION_ALIASES[slug] || slug;
 
 function createCleanURL(text) {
     if (!text) return '';
@@ -245,16 +470,21 @@ export default function CategoriesPage() {
 
     const getCategoryUrl = (slug) => {
         if (!slug) return '/categories';
-        let parentClean = '';
-        for (const [group, items] of Object.entries(CATEGORY_MAPPING)) {
-            if (createCleanURL(group) === slug || items.some(item => createCleanURL(item) === slug)) {
-                parentClean = createCleanURL(group);
-                // If it IS a group, parentClean and slug are identical, just use `/categories/${parentClean}`
-                if (parentClean === slug) return `/categories/${parentClean}`;
-                break;
+        
+        for (const [majorGroup, mainObj] of Object.entries(CATEGORY_MAPPING)) {
+            const cleanMajor = createCleanURL(majorGroup);
+            if (cleanMajor === slug) return `/categories/${cleanMajor}`;
+            
+            for (const [mainGroup, subs] of Object.entries(mainObj)) {
+                const cleanMain = createCleanURL(mainGroup);
+                if (cleanMain === slug) return `/categories/${cleanMajor}/${cleanMain}`;
+                
+                if (subs.some(sub => createCleanURL(sub) === slug)) {
+                    return `/categories/${cleanMajor}/${cleanMain}/${slug}`;
+                }
             }
         }
-        return parentClean ? `/categories/${parentClean}/${slug}` : `/categories/${slug}`;
+        return `/categories/${slug}`;
     };
 
     const slugArray = params?.slug;
@@ -347,25 +577,83 @@ export default function CategoriesPage() {
             setLoading(true);
 
             if (categorySlug) {
-                const targetCollection = allShopifyCollections.find(c => createCleanURL(c.node.title) === categorySlug);
-
-                if (targetCollection) {
-                    const products = targetCollection.node.products.edges;
-                    setCurrentProducts(products);
+                // Expanding the groups regardless of whether product collection exists so it matches route
+                let foundGroup = false;
+                let activeMainCategory = null;
+                let activeMajorCategory = null;
+                
+                for (const [majorGroup, mainObj] of Object.entries(CATEGORY_MAPPING)) {
+                    const cleanMajor = createCleanURL(majorGroup);
+                    if (cleanMajor === categorySlug) {
+                        setExpandedGroups(prev => ({ ...prev, [majorGroup]: true }));
+                        activeMajorCategory = majorGroup;
+                        foundGroup = true;
+                        break;
+                    }
                     
-                    const maxP = Math.max(...products.map(p => parseFloat(p.node.variants?.edges?.[0]?.node?.price?.amount || 0)), 100);
-                    setPriceRange({ min: 0, max: maxP });
-
-                    for (const [group, items] of Object.entries(CATEGORY_MAPPING)) {
-                        const isGroupMatch = createCleanURL(group) === categorySlug;
-                        const match = items.some(item => createCleanURL(item) === categorySlug) || isGroupMatch;
-                        if (match) {
-                            setExpandedGroups(prev => ({ ...prev, [group]: true }));
+                    for (const [mainGroup, subs] of Object.entries(mainObj)) {
+                        const cleanMain = createCleanURL(mainGroup);
+                        if (cleanMain === categorySlug) {
+                            setExpandedGroups(prev => ({ ...prev, [majorGroup]: true, [`${majorGroup}-${mainGroup}`]: true }));
+                            activeMainCategory = mainGroup;
+                            activeMajorCategory = majorGroup;
+                            foundGroup = true;
+                            break;
+                        }
+                        if (subs.some(sub => createCleanURL(sub) === categorySlug)) {
+                            setExpandedGroups(prev => ({ ...prev, [majorGroup]: true, [`${majorGroup}-${mainGroup}`]: true }));
+                            activeMainCategory = mainGroup;
+                            activeMajorCategory = majorGroup;
+                            foundGroup = true;
                             break;
                         }
                     }
+                    if (foundGroup) break;
+                }
+
+                const actualSearchSlug = lookupAlias(categorySlug);
+                let targetCollection = allShopifyCollections.find(c => createCleanURL(c.node.title) === actualSearchSlug);
+                let aggregatedProducts = [];
+
+                if (targetCollection && targetCollection.node.products.edges.length > 0) {
+                    aggregatedProducts = targetCollection.node.products.edges;
+                } else if (activeMainCategory) {
+                    // If 3rd layer is empty or not found, fallback to the Main Category (2nd layer)
+                    const mainSearchSlug = lookupAlias(createCleanURL(activeMainCategory));
+                    const mainCollection = allShopifyCollections.find(c => createCleanURL(c.node.title) === mainSearchSlug);
+                    if (mainCollection && mainCollection.node.products.edges.length > 0) {
+                        aggregatedProducts = mainCollection.node.products.edges;
+                    }
+                } else if (activeMajorCategory) {
+                    // If 1st layer is empty or not found, aggregate products from ALL its 2nd and 3rd layer subcategories
+                    const subNames = [];
+                    const mainObj = CATEGORY_MAPPING[activeMajorCategory];
+                    if (mainObj) {
+                        for (const [mainGroup, subs] of Object.entries(mainObj)) {
+                            subNames.push(createCleanURL(mainGroup));
+                            subs.forEach(s => subNames.push(createCleanURL(s)));
+                        }
+                    }
+                    
+                    const mappedSubNames = subNames.map(lookupAlias);
+                    const matchingCollections = allShopifyCollections.filter(c => mappedSubNames.includes(createCleanURL(c.node.title)));
+                    const allProducts = matchingCollections.flatMap(c => c.node.products.edges);
+                    
+                    // Remove duplicates
+                    const uniqueProductsMap = new Map();
+                    for (const p of allProducts) {
+                        uniqueProductsMap.set(p.node.id, p);
+                    }
+                    aggregatedProducts = Array.from(uniqueProductsMap.values());
+                }
+
+                if (aggregatedProducts.length > 0) {
+                    setCurrentProducts(aggregatedProducts);
+                    
+                    const maxP = Math.max(...aggregatedProducts.map(p => parseFloat(p.node.variants?.edges?.[0]?.node?.price?.amount || 0)), 100);
+                    setPriceRange({ min: 0, max: maxP });
                 } else {
-                    console.warn("Collection not found in Shopify:", categorySlug);
+                    console.warn("Collection not found in Shopify or is empty:", categorySlug);
                     setCurrentProducts([]);
                 }
             } else if (!loading) {
@@ -469,6 +757,16 @@ export default function CategoriesPage() {
     const displayedProducts = filteredProducts.slice(startIndex, endIndex);
     const [inventoryMap, setInventoryMap] = useState({});
 
+    // Force scroll libraries like Lenis to re-calculate document height after DOM changes
+    useEffect(() => {
+        if (!loading) {
+            const timer = setTimeout(() => {
+                window.dispatchEvent(new Event('resize'));
+            }, 150);
+            return () => clearTimeout(timer);
+        }
+    }, [loading, displayedProducts.length]);
+
     // Use variant IDs string as dependency to avoid infinite rendering loop
     const variantIdsString = useMemo(() => {
         return displayedProducts
@@ -551,40 +849,76 @@ export default function CategoriesPage() {
                                 All Products
                             </button>
 
-                            {Object.entries(CATEGORY_MAPPING).map(([groupName, items]) => {
-                                const isExpanded = expandedGroups[groupName];
-                                const isGroupActive = createCleanURL(groupName) === categorySlug;
-                                const hasActiveChild = items.some(item => createCleanURL(item) === categorySlug);
+                            {Object.entries(CATEGORY_MAPPING).map(([majorGroup, mainObj]) => {
+                                const isMajorExpanded = expandedGroups[majorGroup];
+                                const isMajorActive = createCleanURL(majorGroup) === categorySlug;
+                                
+                                let hasActiveChild = false;
+                                for (const [mainGroup, subs] of Object.entries(mainObj)) {
+                                    if (createCleanURL(mainGroup) === categorySlug || subs.some(sub => createCleanURL(sub) === categorySlug)) {
+                                        hasActiveChild = true;
+                                        break;
+                                    }
+                                }
 
                                 return (
-                                    <div key={groupName} className="flex flex-col">
-                                        <button
-                                            onClick={() => handleGroupToggle(groupName)}
-                                            className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-colors ${isGroupActive || hasActiveChild ? 'text-blue-600 bg-blue-50/50' : 'text-gray-600 hover:bg-gray-50'
-                                                }`}
+                                    <div key={majorGroup} className="flex flex-col">
+                                        <div
+                                            className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm font-bold transition-colors cursor-pointer ${isMajorActive || hasActiveChild ? 'text-blue-600 bg-blue-50/50' : 'text-gray-800 hover:bg-gray-50'}`}
+                                            onClick={() => handleGroupToggle(majorGroup)}
                                         >
-                                            <span>{groupName}</span>
+                                            <span onClick={(e) => { e.stopPropagation(); handleCategoryClick(majorGroup); }} className="hover:underline flex-grow text-left">{majorGroup}</span>
                                             <ChevronDown
-                                                size={14}
-                                                className={`transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
+                                                size={16}
+                                                className={`transition-transform duration-200 ${isMajorExpanded ? 'rotate-180' : ''}`}
                                             />
-                                        </button>
+                                        </div>
 
-                                        <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isExpanded ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
-                                            <div className="pl-4 pr-2 pb-2 space-y-1 bg-gray-50/50 rounded-b-lg">
-                                                {items.map((item) => {
-                                                    const isActive = createCleanURL(item) === categorySlug;
+                                        <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isMajorExpanded ? 'max-h-[1500px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                                            <div className="pl-4 pr-2 pb-2 space-y-1 bg-gray-50/30 rounded-b-lg">
+                                                {Object.entries(mainObj).map(([mainGroup, subs]) => {
+                                                    const mainKey = `${majorGroup}-${mainGroup}`;
+                                                    const isMainExpanded = expandedGroups[mainKey];
+                                                    const isMainActive = createCleanURL(mainGroup) === categorySlug;
+                                                    const hasActiveSub = subs.some(sub => createCleanURL(sub) === categorySlug);
+
                                                     return (
-                                                        <button
-                                                            key={item}
-                                                            onClick={() => handleCategoryClick(item)}
-                                                            className={`w-full text-left px-4 py-2 rounded-md text-xs transition-colors ${isActive
-                                                                ? 'bg-blue-100 text-blue-700 font-semibold'
-                                                                : 'text-gray-500 hover:text-[#1392f9] hover:bg-white'
-                                                                }`}
-                                                        >
-                                                            {item}
-                                                        </button>
+                                                        <div key={mainKey} className="flex flex-col mt-1">
+                                                            <div
+                                                                className={`w-full flex items-center justify-between px-4 py-2 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${isMainActive || hasActiveSub ? 'text-blue-600 bg-blue-100/50' : 'text-gray-600 hover:bg-white'}`}
+                                                                onClick={() => handleGroupToggle(mainKey)}
+                                                            >
+                                                                <span onClick={(e) => { e.stopPropagation(); handleCategoryClick(mainGroup); }} className="hover:underline flex-grow text-left">{mainGroup}</span>
+                                                                {subs.length > 0 && (
+                                                                    <ChevronDown
+                                                                        size={14}
+                                                                        className={`transition-transform duration-200 ${isMainExpanded ? 'rotate-180' : ''}`}
+                                                                    />
+                                                                )}
+                                                            </div>
+
+                                                            {subs.length > 0 && (
+                                                                <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isMainExpanded ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                                                                    <div className="pl-6 pr-2 py-1 space-y-1">
+                                                                        {subs.map((sub) => {
+                                                                            const isSubActive = createCleanURL(sub) === categorySlug;
+                                                                            return (
+                                                                                <button
+                                                                                    key={sub}
+                                                                                    onClick={() => handleCategoryClick(sub)}
+                                                                                    className={`w-full text-left px-4 py-1.5 rounded-md text-xs transition-colors ${isSubActive
+                                                                                        ? 'bg-blue-100 text-blue-700 font-bold'
+                                                                                        : 'text-gray-500 hover:text-[#1392f9] hover:bg-gray-100'
+                                                                                        }`}
+                                                                                >
+                                                                                    {sub}
+                                                                                </button>
+                                                                            );
+                                                                        })}
+                                                                    </div>
+                                                                </div>
+                                                            )}
+                                                        </div>
                                                     );
                                                 })}
                                             </div>

@@ -1,6 +1,6 @@
 import { fetchArticle } from '@/lib/shopify';
 import Image from 'next/image';
-import Link from 'next/link';
+import Link from "@/components/AppLink";
 
 export async function generateMetadata({ params }) {
     const { slug } = await params;

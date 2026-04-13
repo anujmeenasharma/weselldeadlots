@@ -1,15 +1,31 @@
 'use client';
 
-import Link from "next/link";
+import Link from "@/components/AppLink";
 import Image from "next/image";
-import { CiSearch } from "react-icons/ci";
-import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import SearchModal from "./SearchModal";
+import { useRouter, usePathname } from "next/navigation";
+import { CiSearch } from "react-icons/ci";
+import { Menu, X, Globe } from "lucide-react";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
+  const isArabic = pathname.startsWith("/arabic");
+  const locale = isArabic ? "ar" : "en";
+
+  const changeLanguage = (newLocale) => {
+    if (newLocale === "ar" && !isArabic) {
+      document.cookie = "googtrans=/en/ar; path=/";
+      window.location.href = `/arabic${pathname === "/" ? "" : pathname}`;
+    } else if (newLocale === "en" && isArabic) {
+      document.cookie = "googtrans=/en/en; path=/";
+      const newPath = pathname.replace(/^\/arabic/, "") || "/";
+      window.location.href = newPath;
+    }
+  };
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -50,6 +66,17 @@ const Navbar = () => {
 
         {/* Search & Mobile Menu Toggle */}
         <div className="flex items-center gap-4">
+          <div className="hidden lg:flex items-center gap-2 mr-2">
+            <Globe className="w-5 h-5 text-gray-600" />
+            <select
+              value={locale}
+              onChange={(e) => changeLanguage(e.target.value)}
+              className="bg-transparent text-gray-800 font-medium focus:outline-none cursor-pointer"
+            >
+              <option value="en">English</option>
+              <option value="ar">العربية</option>
+            </select>
+          </div>
           <button
             onClick={() => setIsSearchModalOpen(true)}
             className="text-2xl cursor-pointer hover:text-primary transition-colors flex items-center justify-center p-2"
@@ -80,6 +107,20 @@ const Navbar = () => {
               {item.name}
             </Link>
           ))}
+          <div className="flex items-center gap-2 mt-4 bg-gray-100 px-4 py-2 rounded-full">
+            <Globe className="w-5 h-5 text-gray-600" />
+            <select
+              value={locale}
+              onChange={(e) => {
+                changeLanguage(e.target.value);
+                setIsMenuOpen(false);
+              }}
+              className="bg-transparent text-gray-800 text-lg font-medium focus:outline-none cursor-pointer"
+            >
+              <option value="en">English</option>
+              <option value="ar">العربية</option>
+            </select>
+          </div>
           <Link
             href="https://hashim8803-wbds.odoo.com/get-a-free-valuation-dead-lots"
             className="bg-primary text-white px-8 py-3 rounded-full text-xl"

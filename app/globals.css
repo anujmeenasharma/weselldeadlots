@@ -7,3 +7,7 @@
 .bg-primary{
   background: #1392f9;
 }
+
+.skiptranslate{
+  display: none;
+}

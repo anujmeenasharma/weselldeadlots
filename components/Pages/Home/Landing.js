@@ -1,5 +1,5 @@
 import Image from "next/image"
-import Link from "next/link"
+import Link from "@/components/AppLink";
 
 const Landing = () => {
     return (
@@ -18,7 +18,7 @@ const Landing = () => {
             </div>
 
             {/* Bottom Bar Info */}
-            <div className="w-full absolute flex flex-col md:flex-row items-center justify-between text-white px-6 md:px-[5vw] lg:px-[5vw] bottom-10 left-0 gap-4 md:gap-0">
+            <div className="w-full absolute flex flex-col md:flex-row items-center justify-between text-white px-6 md:px-[5vw] lg:px-[5vw] bottom-10 start-0 gap-4 md:gap-0">
                 <p className="w-full md:w-[30vw] text-center md:text-left text-sm md:text-[1.4vw] lg:text-[1vw]">
                     We specialize in giving unsold inventory a second life
                 </p>
@@ -31,7 +31,7 @@ const Landing = () => {
             </div>
 
             {/* Explore Button */}
-            <Link href="#categories" className="absolute top-1/2 right-4 md:right-[5vw] lg:right-[5vw] -translate-y-1/2 hidden md:block hover:scale-105 transition-transform duration-300">
+            <Link href="#categories" className="absolute top-1/2 end-4 md:end-[5vw] lg:end-[5vw] -translate-y-1/2 hidden md:block hover:scale-105 transition-transform duration-300">
                 <Image
                     className="w-24 h-24 md:w-[16vw] md:h-[16vw] lg:w-[12vw] lg:h-[12vw]"
                     src="/icons/explore.svg"

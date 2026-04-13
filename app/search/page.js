@@ -2,7 +2,7 @@
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState, Suspense } from 'react';
 import { searchProducts } from '@/lib/shopify';
-import Link from 'next/link';
+import Link from "@/components/AppLink";
 import CategorySidebar, { CATEGORY_MAPPING, createCleanURL } from '@/components/Partials/CategorySidebar';
 
 function SearchContent() {

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { X, Search } from 'lucide-react';
-import Link from 'next/link';
+import Link from "@/components/AppLink";
 import { searchProducts } from '@/lib/shopify';
 
 const SearchModal = ({ isOpen, onClose }) => {

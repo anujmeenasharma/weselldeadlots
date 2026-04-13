@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import Link from "next/link";
+import Link from "@/components/AppLink";
 import Image from "next/image";
 import { ArrowLeft, Search } from "lucide-react";
 import { fetchBlogData } from "@/lib/shopify";

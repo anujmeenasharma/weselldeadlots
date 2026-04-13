@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
+import Link from "@/components/AppLink";
 import { Zap, Wrench, Settings, Home, Laptop, Anchor, ShoppingBag, Recycle } from 'lucide-react';
 
 export const generateSlug = (name) => {
@@ -17,27 +17,27 @@ export default function Category() {
       items: [
         {
           title: 'SWITCH GEAR',
-          image: '/images/categories/e1.webp',
+          image: '/images/categories/Switchgear.jpg',
           link: '/categories/electronic/switch-gear'
         },
         {
           title: 'AUTOMATION & CONTROL EQUIPMENTS',
-          image: '/images/categories/e2.webp',
+          image: '/images/categories/automation.jpg',
           link: '/categories/electronic/automation-and-control-equipments'
         },
         {
           title: 'WIRES & CABLES',
-          image: '/images/categories/e3.webp',
+          image: '/images/categories/cables.jpg',
           link: '/categories/electronic/wires-and-cables'
         },
         {
           title: 'SWITCH & SOCKETS',
-          image: '/images/categories/e4.webp',
+          image: '/images/categories/switchnsocket.jpg',
           link: '/categories/electronic/switch-and-sockets'
         },
         {
           title: 'ELECTRONICS & LIGHTING',
-          image: '/images/categories/e5.webp',
+          image: '/images/categories/Lighting.jpg',
           link: '/categories/electronic/electronics-and-lighting'
         }
       ]
@@ -50,17 +50,17 @@ export default function Category() {
       items: [
         {
           title: 'HAND TOOLS',
-          image: '/images/categories/to1.webp',
+          image: '/images/categories/hand-tools.jpg',
           link: '/categories/tools/hand-tools'
         },
         {
           title: 'POWER TOOLS',
-          image: '/images/categories/to2.webp',
+          image: '/images/categories/power-tools-accessories.jpg',
           link: '/categories/tools/power-tools'
         },
         {
           title: 'CUTTING TOOLS',
-          image: '/images/categories/to3.webp',
+          image: '/images/categories/other-tools.png',
           link: '/categories/tools/cutting-tools'
         },
         {
@@ -83,27 +83,27 @@ export default function Category() {
       items: [
         {
           title: 'MACHINERY',
-          image: '/images/categories/i1.webp',
+          image: '/images/categories/machinery.jpg',
           link: '/categories/industrial/machinery'
         },
         {
           title: 'BEARINGS',
-          image: '/images/categories/i2.webp',
+          image: '/images/categories/bearings.jpg',
           link: '/categories/industrial/bearings'
         },
         {
           title: 'HYDRAULIC COMPONENTS',
-          image: '/images/categories/i3.webp',
+          image: '/images/categories/hydraulic-components.jpg',
           link: '/categories/industrial/hydraulic-components'
         },
         {
           title: 'MOTORS',
-          image: '/images/categories/i4.webp',
+          image: '/images/categories/motors.jpeg',
           link: '/categories/industrial/motors'
         },
         {
           title: 'GENERATORS',
-          image: '/images/categories/i5.webp',
+          image: '/images/categories/generators.png',
           link: '/categories/industrial/generators'
         }
       ]
@@ -116,12 +116,12 @@ export default function Category() {
       items: [
         {
           title: 'HVAC SYSTEMS',
-          image: '/images/categories/co1.webp',
+          image: '/images/categories/hvac-systems.jpg',
           link: '/categories/construction/hvac-systems'
         },
         {
           title: 'FIRE & SAFETY',
-          image: '/images/categories/co2.webp',
+          image: '/images/categories/fire-and-safety.jpg',
           link: '/categories/construction/fire-and-safety'
         },
         {
@@ -131,7 +131,7 @@ export default function Category() {
         },
         {
           title: 'PLUMBING SYSTEMS',
-          image: '/images/categories/co4.webp',
+          image: '/images/categories/sanitary.jpg',
           link: '/categories/plumbing-systems'
         },
         {
@@ -177,17 +177,17 @@ export default function Category() {
       items: [
         {
           title: 'OIL & GAS EQUIPMENTS',
-          image: '/images/categories/m1.webp',
+          image: '/images/categories/marine-navigation.jpg',
           link: '/categories/energy/oil-and-gas-equipments'
         },
         {
           title: 'MARINE SUPPLIES',
-          image: '/images/categories/m2.webp',
+          image: '/images/categories/marine-safety.jpg',
           link: '/categories/energy/marine-supplies'
         },
         {
           title: 'AEROSPACE & AIRCRAFT MATERIALS',
-          image: '/images/categories/m3.webp',
+          image: '/images/categories/marine-electrical.jpg',
           link: '/categories/energy/aerospace-and-aircraft-materials'
         }
       ]
@@ -205,22 +205,22 @@ export default function Category() {
         },
         {
           title: 'COSMETICS & PERSONAL CARE',
-          image: '/images/categories/c2.webp',
+          image: '/images/categories/cosmetics.jpg',
           link: '/categories/consumer/cosmetics-and-personal-care'
         },
         {
           title: 'TOYS & GAMES',
-          image: '/images/categories/c3.webp',
+          image: '/images/categories/toys.jpg',
           link: '/categories/consumer/toys-and-games'
         },
         {
           title: 'KIDS ESSENTIALS',
-          image: '/images/categories/c4.webp',
+          image: '/images/categories/kids-essentials.jpg',
           link: '/categories/consumer/kids-essentials'
         },
         {
           title: 'FOOTWEAR',
-          image: '/images/categories/c5.webp',
+          image: '/images/categories/footwear.jpg',
           link: '/categories/consumer/footwear'
         }
       ]

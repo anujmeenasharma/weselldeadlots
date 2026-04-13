@@ -13,6 +13,8 @@ const montserrat = Montserrat({
 
 import Script from "next/script";
 import MetaPixel from "@/components/MetaPixel";
+import { headers } from "next/headers";
+import GoogleTranslate from "@/components/GoogleTranslate";
 
 export const metadata = {
   metadataBase: new URL("https://weselldeadlots.com"),
@@ -70,9 +72,14 @@ const serviceLd = {
   }
 };
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  const headersList = await headers();
+  const locale = headersList.get("x-locale") || "en";
+  const isArabic = locale === "ar";
+  const dir = isArabic ? "rtl" : "ltr";
+
   return (
-    <html lang="en">
+    <html lang="en" dir={dir}>
       <head>
         <meta
           httpEquiv="Content-Security-Policy"
@@ -104,6 +111,7 @@ export default function RootLayout({ children }) {
 
         <MetaPixel />
 
+        <GoogleTranslate />
         <ClientLayout>
           <Navbar />
           {children}
