@@ -107,7 +107,7 @@ const SearchModal = ({ isOpen, onClose }) => {
                                 Categories
                             </h3>
                             <div className="flex flex-wrap gap-2">
-                                {['Electrical & Automation', 'Tools & Equipments', 'Industrial Equipments', 'Construction'].map(cat => (
+                                {['Electrical', 'Tools & Equipments', 'Industrial Equipments', 'Construction'].map(cat => (
                                     <span key={cat} onClick={() => setQuery(cat)} className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-lg text-sm cursor-pointer transition-colors">
                                         {cat}
                                     </span>

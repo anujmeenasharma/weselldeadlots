@@ -12,7 +12,7 @@ export default function Category() {
   const categories = [
     {
       id: 'electrical',
-      name: 'Electrical & Automation',
+      name: 'Electrical',
       icon: Zap,
       items: [
         {
@@ -45,7 +45,7 @@ export default function Category() {
 
     {
       id: 'tools',
-      name: 'Tools & Equipment',
+      name: 'Tools',
       icon: Wrench,
       items: [
         {
@@ -78,7 +78,7 @@ export default function Category() {
 
     {
       id: 'industrial',
-      name: 'Industrial Equipment & Components',
+      name: 'Industrial Equipment',
       icon: Settings,
       items: [
         {
@@ -111,7 +111,7 @@ export default function Category() {
 
     {
       id: 'construction',
-      name: 'Construction & Building Materials',
+      name: 'Building Material',
       icon: Home,
       items: [
         {
@@ -144,7 +144,7 @@ export default function Category() {
 
     {
       id: 'technology',
-      name: 'Technology & Power Solutions',
+      name: 'Computers & IT',
       icon: Laptop,
       items: [
         {
@@ -195,7 +195,7 @@ export default function Category() {
 
     {
       id: 'consumer',
-      name: 'Consumer Goods & Lifestyle',
+      name: 'Consumer Goods',
       icon: ShoppingBag,
       items: [
         {
