@@ -11,7 +11,7 @@ import Category from "@/components/Pages/Home/Category"
 
 gsap.registerPlugin(ScrollTrigger)
 
-const page = () => {
+const HomeClient = ({ todaysDeals, initialExploreLots, initialExplorePageInfo }) => {
   const contRef = useRef(null)
   const boxRef = useRef(null)
 
@@ -52,11 +52,11 @@ const page = () => {
           <Landing />
         </div>
       </div>
-      <TodaysDeals />
+      <TodaysDeals products={todaysDeals} />
       <Category />
-      <ExploreAllLots />
+      <ExploreAllLots initialProducts={initialExploreLots} initialPageInfo={initialExplorePageInfo} />
     </div>
   )
 }
 
-export default page
+export default HomeClient

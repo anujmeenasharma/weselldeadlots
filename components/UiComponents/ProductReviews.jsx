@@ -137,7 +137,7 @@ export default function ProductReviews({ productId, handle, initialReviews }) {
                                             ))}
                                         </div>
                                         <span className="text-sm font-medium text-gray-400">
-                                            {new Date(review.date).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
+                                            {new Date(review.date).toLocaleDateString("en-US", { year: 'numeric', month: 'short', day: 'numeric' })}
                                         </span>
                                     </div>
                                     <h4 className="font-bold text-gray-900 text-lg">{review.name}</h4>

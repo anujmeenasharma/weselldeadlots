@@ -88,7 +88,11 @@ export async function POST(request) {
             setCache(id, qty);
         }
 
-        return NextResponse.json({ quantities: result });
+        return NextResponse.json({ quantities: result }, {
+            headers: {
+                'Cache-Control': 'public, max-age=120, stale-while-revalidate=60',
+            }
+        });
     } catch {
         return NextResponse.json({ quantities: result });
     }

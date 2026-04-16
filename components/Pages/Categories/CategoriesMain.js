@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, Suspense, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, Suspense, useMemo } from 'react';
 import Image from 'next/image';
 import Link from "@/components/AppLink";
 import { useRouter, useSearchParams, useParams } from 'next/navigation';
@@ -8,11 +8,6 @@ import { ChevronDown, ChevronRight, ChevronLeft, Search, Filter, X } from 'lucid
 import { FaWhatsapp } from 'react-icons/fa';
 
 
-const SHOPIFY_CONFIG = {
-    storeUrl: process.env.NEXT_PUBLIC_SHOPIFY_STORE_URL,
-    accessToken: process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN,
-    apiVersion: process.env.NEXT_PUBLIC_SHOPIFY_API_VERSION || "2024-04",
-};
 
 const PRODUCTS_PER_PAGE = 25;
 
@@ -302,30 +297,6 @@ function createCleanURL(text) {
         .replace(/^-|-$/g, '');
 }
 
-async function shopifyFetch(query, variables = {}) {
-    const response = await fetch(
-        `https://${SHOPIFY_CONFIG.storeUrl}/api/${SHOPIFY_CONFIG.apiVersion}/graphql.json`,
-        {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-Shopify-Storefront-Access-Token": SHOPIFY_CONFIG.accessToken,
-                Accept: "application/json",
-            },
-            body: JSON.stringify({ query, variables }),
-        }
-    );
-
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    if (data.errors) {
-        throw new Error(data.errors[0].message || "GraphQL Error");
-    }
-    return data;
-}
 
 const ProductCard = ({ product: { node }, exactQuantity }) => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -449,12 +420,12 @@ const ProductCard = ({ product: { node }, exactQuantity }) => {
     );
 };
 
-export default function CategoriesPage() {
+export default function CategoriesPage({ initialCollections = [] }) {
     const router = useRouter();
     const searchParams = useSearchParams();
     const params = useParams();
 
-    const [allShopifyCollections, setAllShopifyCollections] = useState([]);
+    const [allShopifyCollections, setAllShopifyCollections] = useState(initialCollections);
     const [currentProducts, setCurrentProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [expandedGroups, setExpandedGroups] = useState({});
@@ -505,70 +476,17 @@ export default function CategoriesPage() {
         categorySlug = decodeURIComponent(slugArray);
     }
 
-    const fetchAllCollections = useCallback(async () => {
-        try {
-            let allCols = [];
-            let hasNextPage = true;
-            let cursor = null;
-
-            while (hasNextPage) {
-                const query = `
-          query($cursor: String) {
-            collections(first: 50, after: $cursor) {
-              pageInfo { hasNextPage, endCursor }
-              edges {
-                node {
-                  id, title, handle
-                  products(first: 250) {
-                    edges {
-                      node {
-                        id, title, handle, vendor, productType, description
-                        images(first: 5) { edges { node { url, altText } } }
-                        variants(first: 1) { edges { node { id, price { amount, currencyCode } } } }
-                        tags
-                        metafields(identifiers: [
-                          {namespace: "custom", key: "model_no"},
-                          {namespace: "custom", key: "mini_quantity"},
-                          {namespace: "custom", key: "is_unit_kg"},
-                          {namespace: "custom", key: "material"}
-                        ]) { key, value }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        `;
-
-                const data = await shopifyFetch(query, cursor ? { cursor } : {});
-                allCols = [...allCols, ...data.data.collections.edges];
-                hasNextPage = data.data.collections.pageInfo.hasNextPage;
-                cursor = data.data.collections.pageInfo.endCursor;
-            }
-            return allCols;
-        } catch (err) {
-            console.error("Error fetching collections:", err);
-            setError("Failed to load categories.");
-            return [];
-        }
-    }, []);
-
+    // Collections are provided as SSR props — initialize products from them immediately
     useEffect(() => {
-        const init = async () => {
-            setLoading(true);
-            const cols = await fetchAllCollections();
-            setAllShopifyCollections(cols);
+        if (allShopifyCollections.length === 0) return;
 
-            if (!categorySlug) {
-                const all = cols.flatMap(c => c.node.products.edges);
-                const unique = Array.from(new Map(all.map(item => [item.node.id, item])).values());
-                setCurrentProducts(unique);
-            }
-            setLoading(false);
-        };
-        init();
-    }, [fetchAllCollections, categorySlug]);
+        if (!categorySlug) {
+            const all = allShopifyCollections.flatMap(c => c.node.products.edges);
+            const unique = Array.from(new Map(all.map(item => [item.node.id, item])).values());
+            setCurrentProducts(unique);
+        }
+        setLoading(false);
+    }, [allShopifyCollections, categorySlug]);
 
     useEffect(() => {
         if (allShopifyCollections.length === 0) return;
@@ -728,6 +646,11 @@ export default function CategoriesPage() {
 
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isFilterSidebarOpen, setIsFilterSidebarOpen] = useState(false);
+
+    // Collapsible filter section states
+    const [isConditionOpen, setIsConditionOpen] = useState(false);
+    const [isOriginOpen, setIsOriginOpen] = useState(true);
+    const [isMaterialOpen, setIsMaterialOpen] = useState(true);
 
     // Close sidebar on route change (mobile)
     useEffect(() => {
@@ -1087,19 +1010,30 @@ export default function CategoriesPage() {
                         {/* Condition Filter */}
                         {availableConditions.length > 0 && (
                             <div>
-                                <h4 className="text-sm font-semibold text-gray-700 mb-3">Condition</h4>
-                                <div className="space-y-2 max-h-48 overflow-y-auto custom-scrollbar">
-                                    {availableConditions.map(cond => (
-                                        <label key={cond} className="flex items-center gap-2 cursor-pointer group">
-                                            <input
-                                                type="checkbox"
-                                                checked={selectedConditions.includes(cond)}
-                                                onChange={() => toggleFilter(setSelectedConditions, cond)}
-                                                className="rounded text-[#1392f9] focus:ring-[#1392f9] w-4 h-4 cursor-pointer"
-                                            />
-                                            <span className="text-sm text-gray-600 group-hover:text-gray-900">{cond}</span>
-                                        </label>
-                                    ))}
+                                <button
+                                    onClick={() => setIsConditionOpen(prev => !prev)}
+                                    className="w-full flex items-center justify-between mb-3 group"
+                                >
+                                    <h4 className="text-sm font-semibold text-gray-700 group-hover:text-gray-900 transition-colors">Condition</h4>
+                                    <ChevronDown
+                                        size={16}
+                                        className={`text-gray-400 transition-transform duration-200 ${isConditionOpen ? 'rotate-180' : ''}`}
+                                    />
+                                </button>
+                                <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isConditionOpen ? 'max-h-48 opacity-100' : 'max-h-0 opacity-0'}`}>
+                                    <div className="space-y-2 max-h-48 overflow-y-auto custom-scrollbar">
+                                        {availableConditions.map(cond => (
+                                            <label key={cond} className="flex items-center gap-2 cursor-pointer group">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedConditions.includes(cond)}
+                                                    onChange={() => toggleFilter(setSelectedConditions, cond)}
+                                                    className="rounded text-[#1392f9] focus:ring-[#1392f9] w-4 h-4 cursor-pointer"
+                                                />
+                                                <span className="text-sm text-gray-600 group-hover:text-gray-900">{cond}</span>
+                                            </label>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
                         )}
@@ -1107,19 +1041,30 @@ export default function CategoriesPage() {
                         {/* Brand / Vendor Filter */}
                         {availableBrands.length > 0 && (
                             <div>
-                                <h4 className="text-sm font-semibold text-gray-700 mb-3">Brand</h4>
-                                <div className="space-y-2 max-h-48 overflow-y-auto custom-scrollbar">
-                                    {availableBrands.map(brand => (
-                                        <label key={brand} className="flex items-center gap-2 cursor-pointer group">
-                                            <input
-                                                type="checkbox"
-                                                checked={selectedBrands.includes(brand)}
-                                                onChange={() => toggleFilter(setSelectedBrands, brand)}
-                                                className="rounded text-[#1392f9] focus:ring-[#1392f9] w-4 h-4 cursor-pointer"
-                                            />
-                                            <span className="text-sm text-gray-600 group-hover:text-gray-900">{brand}</span>
-                                        </label>
-                                    ))}
+                                <button
+                                    onClick={() => setIsOriginOpen(prev => !prev)}
+                                    className="w-full flex items-center justify-between mb-3 group"
+                                >
+                                    <h4 className="text-sm font-semibold text-gray-700 group-hover:text-gray-900 transition-colors">Origin</h4>
+                                    <ChevronDown
+                                        size={16}
+                                        className={`text-gray-400 transition-transform duration-200 ${isOriginOpen ? 'rotate-180' : ''}`}
+                                    />
+                                </button>
+                                <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isOriginOpen ? 'max-h-48 opacity-100' : 'max-h-0 opacity-0'}`}>
+                                    <div className="space-y-2 max-h-48 overflow-y-auto custom-scrollbar">
+                                        {availableBrands.map(brand => (
+                                            <label key={brand} className="flex items-center gap-2 cursor-pointer group">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedBrands.includes(brand)}
+                                                    onChange={() => toggleFilter(setSelectedBrands, brand)}
+                                                    className="rounded text-[#1392f9] focus:ring-[#1392f9] w-4 h-4 cursor-pointer"
+                                                />
+                                                <span className="text-sm text-gray-600 group-hover:text-gray-900">{brand}</span>
+                                            </label>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
                         )}
@@ -1127,19 +1072,30 @@ export default function CategoriesPage() {
                         {/* Material Filter */}
                         {availableMaterials.length > 0 && (
                             <div>
-                                <h4 className="text-sm font-semibold text-gray-700 mb-3">Material</h4>
-                                <div className="space-y-2 max-h-48 overflow-y-auto custom-scrollbar">
-                                    {availableMaterials.map(mat => (
-                                        <label key={mat} className="flex items-center gap-2 cursor-pointer group">
-                                            <input
-                                                type="checkbox"
-                                                checked={selectedMaterials.includes(mat)}
-                                                onChange={() => toggleFilter(setSelectedMaterials, mat)}
-                                                className="rounded text-[#1392f9] focus:ring-[#1392f9] w-4 h-4 cursor-pointer"
-                                            />
-                                            <span className="text-sm text-gray-600 group-hover:text-gray-900">{mat}</span>
-                                        </label>
-                                    ))}
+                                <button
+                                    onClick={() => setIsMaterialOpen(prev => !prev)}
+                                    className="w-full flex items-center justify-between mb-3 group"
+                                >
+                                    <h4 className="text-sm font-semibold text-gray-700 group-hover:text-gray-900 transition-colors">Material</h4>
+                                    <ChevronDown
+                                        size={16}
+                                        className={`text-gray-400 transition-transform duration-200 ${isMaterialOpen ? 'rotate-180' : ''}`}
+                                    />
+                                </button>
+                                <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isMaterialOpen ? 'max-h-48 opacity-100' : 'max-h-0 opacity-0'}`}>
+                                    <div className="space-y-2 max-h-48 overflow-y-auto custom-scrollbar">
+                                        {availableMaterials.map(mat => (
+                                            <label key={mat} className="flex items-center gap-2 cursor-pointer group">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedMaterials.includes(mat)}
+                                                    onChange={() => toggleFilter(setSelectedMaterials, mat)}
+                                                    className="rounded text-[#1392f9] focus:ring-[#1392f9] w-4 h-4 cursor-pointer"
+                                                />
+                                                <span className="text-sm text-gray-600 group-hover:text-gray-900">{mat}</span>
+                                            </label>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
                         )}

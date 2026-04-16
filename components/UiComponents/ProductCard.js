@@ -1,16 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import Link from "@/components/AppLink";
 import { FaWhatsapp } from "react-icons/fa";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-const ProductCard = ({ product, exactQuantity: propQuantity }) => {
+const ProductCard = ({ product, exactQuantity }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [fetchedQuantity, setFetchedQuantity] = useState(null);
-
-  const exactQuantity = propQuantity !== undefined ? propQuantity : fetchedQuantity;
 
   if (!product) return null;
 
@@ -33,32 +30,11 @@ const ProductCard = ({ product, exactQuantity: propQuantity }) => {
     return "bg-gray-800 text-white"; // Fallback color
   };
 
-  // Debug log to ensure productType is being received
-  console.log("Card RENDER:", title, "-> Cond:", productType);
   const handle = product.handle;
-  const productId = id?.split("/").pop();
-  const productUrl = typeof window !== 'undefined' ? `${window.location.origin}/product/${handle}` : "#";
-  const whatsappMessage = `Hello, I want to buy ${title} with model number ${modelNo}. Here is the link of the product: ${productUrl}`;
+  const productUrl = `/product/${handle}`;
+  const whatsappMessage = `Hello, I want to buy ${title} with model number ${modelNo}. Here is the link of the product: https://www.weselldeadlots.com/product/${handle}`;
   const whatsappLink = `https://wa.me/+971552748974?text=${encodeURIComponent(whatsappMessage)}`;
 
-  useEffect(() => {
-    if (propQuantity !== undefined) return;
-    const variantGid = variants?.edges?.[0]?.node?.id;
-    if (!variantGid) return;
-    const variantId = variantGid.split("/").pop();
-    if (!variantId) return;
-    fetch('/api/inventory/batch', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ variantIds: [variantId] }),
-    })
-      .then(r => r.json())
-      .then(data => {
-        const qty = data?.quantities?.[variantId];
-        if (qty !== null && qty !== undefined) setFetchedQuantity(qty);
-      })
-      .catch(() => {});
-  }, [variants, propQuantity]);
 
   const nextImage = (e) => {
     e.preventDefault();

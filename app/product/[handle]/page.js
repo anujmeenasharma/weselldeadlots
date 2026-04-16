@@ -1,6 +1,9 @@
 
 import { fetchProductByHandle, fetchProductRecommendations } from '@/lib/shopify';
 
+// Revalidate product pages every 5 minutes
+export const revalidate = 300;
+
 async function fetchAdminInventory(variantId) {
     const adminToken = process.env.SHOPIFY_ADMIN_API_ACCESS_TOKEN;
     const storeUrl = process.env.NEXT_PUBLIC_SHOPIFY_STORE_URL;
@@ -13,14 +16,44 @@ async function fetchAdminInventory(variantId) {
                 'Content-Type': 'application/json',
                 'X-Shopify-Access-Token': adminToken,
             },
-            cache: 'no-store'
+            next: { revalidate: 120 }
         });
         if (!response.ok) return null;
         const data = await response.json();
-        console.log(data)
         return data?.variant?.inventory_quantity ?? null;
     } catch {
         return null;
+    }
+}
+
+// Storefront API cannot read custom metafields unless explicitly exposed in Shopify Admin.
+// We fetch reviews directly from the Admin API to guarantee access.
+async function fetchAdminReviews(productId) {
+    const adminToken = process.env.SHOPIFY_ADMIN_API_ACCESS_TOKEN;
+    const storeUrl = process.env.NEXT_PUBLIC_SHOPIFY_STORE_URL;
+    if (!adminToken || !storeUrl || !productId) return [];
+
+    try {
+        const response = await fetch(
+            `https://${storeUrl}/admin/api/2024-01/products/${productId}/metafields.json?namespace=custom&key=product_reviews`,
+            {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Shopify-Access-Token': adminToken,
+                },
+                cache: 'no-store'
+            }
+        );
+        if (!response.ok) return [];
+        const data = await response.json();
+        const metafield = data?.metafields?.find(m => m.namespace === 'custom' && m.key === 'product_reviews');
+        if (!metafield?.value) return [];
+        const parsed = JSON.parse(metafield.value);
+        return Array.isArray(parsed) ? parsed : [];
+    } catch (e) {
+        console.error('Failed to fetch admin reviews', e);
+        return [];
     }
 }
 import Image from 'next/image';
@@ -78,16 +111,7 @@ export default async function ProductPage({ params }) {
     const exactQuantity = await fetchAdminInventory(variantId);
     
     const rawProductId = product.id.split("/").pop();
-    const reviewsMetafield = product.metafields?.find(m => m?.key === "product_reviews")?.value;
-    let initialReviews = [];
-    if (reviewsMetafield) {
-        try {
-            initialReviews = JSON.parse(reviewsMetafield);
-            if (!Array.isArray(initialReviews)) initialReviews = [];
-        } catch (e) {
-            console.error("Failed to parse reviews", e);
-        }
-    }
+    const initialReviews = await fetchAdminReviews(rawProductId);
 
     const isAvailable = product.availableForSale;
     const productUrl = `https://www.weselldeadlots.com/product/${handle}`;
@@ -123,7 +147,7 @@ export default async function ProductPage({ params }) {
 
                         <div className="space-y-2">
                             <p className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Condition:</p>
-                            <h2 className="text-2xl font-bold text-gray-900">Used</h2>
+                            <h2 className="text-2xl font-bold text-gray-900">{product.productType || "N/A"}</h2>
                         </div>
 
                         <div className="space-y-2">

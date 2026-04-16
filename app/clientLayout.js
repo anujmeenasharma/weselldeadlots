@@ -1,6 +1,25 @@
 "use client";
-import { ReactLenis } from "lenis/react";
+import { ReactLenis, useLenis } from "lenis/react";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
+
+// Inner component that has access to the Lenis instance via context
+function LenisRouteSync() {
+  const lenis = useLenis();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (!lenis) return;
+    // After every route change, wait for React to finish painting the new page
+    // then tell Lenis to recalculate the full document height.
+    const timer = setTimeout(() => {
+      lenis.resize();
+    }, 150);
+    return () => clearTimeout(timer);
+  }, [pathname, lenis]);
+
+  return null;
+}
 
 export default function ClientLayout({ children }) {
   const [isMobile, setIsMobile] = useState(false);
@@ -30,6 +49,7 @@ export default function ClientLayout({ children }) {
 
   return (
     <ReactLenis root options={scrollSettings}>
+      <LenisRouteSync />
       {children}
     </ReactLenis>
   );

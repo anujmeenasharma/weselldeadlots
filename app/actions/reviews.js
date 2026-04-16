@@ -64,7 +64,7 @@ export async function submitProductReview(productId, handle, reviewData) {
                 namespace: "custom",
                 key: "product_reviews",
                 value: updatedValue,
-                type: "json"
+                type: "multi_line_text_field"
             }
         };
 
@@ -74,7 +74,7 @@ export async function submitProductReview(productId, handle, reviewData) {
             payload.metafield = {
                 id: existingMetafield.id,
                 value: updatedValue,
-                type: "json"
+                type: "multi_line_text_field"
             };
         }
 
@@ -91,6 +91,49 @@ export async function submitProductReview(productId, handle, reviewData) {
         if (!saveResponse.ok) {
             const errorText = await saveResponse.text();
             console.error("Failed to save product review", errorText);
+
+            // If the existing metafield was created with type "json", Shopify won't allow
+            // changing the type via PUT. Delete it and recreate with the correct type.
+            if (existingMetafield && (errorText.includes("type") || errorText.includes("cannot be changed"))) {
+                const deleteResponse = await fetch(
+                    `https://${storeUrl}/admin/api/2024-01/metafields/${existingMetafield.id}.json`,
+                    {
+                        method: 'DELETE',
+                        headers: { 'X-Shopify-Access-Token': adminToken },
+                        cache: 'no-store'
+                    }
+                );
+                if (deleteResponse.ok) {
+                    // Retry as a fresh POST with the correct type
+                    const retryPayload = {
+                        metafield: {
+                            namespace: "custom",
+                            key: "product_reviews",
+                            value: updatedValue,
+                            type: "multi_line_text_field"
+                        }
+                    };
+                    const retryResponse = await fetch(
+                        `https://${storeUrl}/admin/api/2024-01/products/${productId}/metafields.json`,
+                        {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-Shopify-Access-Token': adminToken,
+                            },
+                            body: JSON.stringify(retryPayload),
+                            cache: 'no-store'
+                        }
+                    );
+                    if (!retryResponse.ok) {
+                        console.error("Failed to recreate metafield after type migration", await retryResponse.text());
+                        return { success: false, error: "Failed to save product review." };
+                    }
+                    revalidatePath(`/product/${handle}`);
+                    return { success: true };
+                }
+            }
+
             if (errorText.includes("write_products scope")) {
                 return { success: false, error: "Shopify Token lacks 'write_products' permission. Please update your Custom App in Shopify Admin." };
             }

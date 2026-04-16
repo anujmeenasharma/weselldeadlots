@@ -1,11 +1,12 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import ProductCard from "../../UiComponents/ProductCard";
 import { fetchExploreLots } from "@/lib/shopify";
 
-const ExploreAllLots = () => {
-  const [products, setProducts] = useState([]);
-  const [pageInfo, setPageInfo] = useState({ hasNextPage: false, endCursor: null });
+// Initial products are server-side rendered — only "Load More" fetches client-side
+const ExploreAllLots = ({ initialProducts = [], initialPageInfo = { hasNextPage: false, endCursor: null } }) => {
+  const [products, setProducts] = useState(initialProducts);
+  const [pageInfo, setPageInfo] = useState(initialPageInfo);
   const [loading, setLoading] = useState(false);
   const [inventoryMap, setInventoryMap] = useState({});
 
@@ -24,20 +25,6 @@ const ExploreAllLots = () => {
       setInventoryMap(prev => ({ ...prev, ...data.quantities }));
     } catch {}
   };
-
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        const data = await fetchExploreLots(25);
-        setProducts(data.edges);
-        setPageInfo(data.pageInfo);
-        batchFetchInventory(data.edges);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    getData();
-  }, []);
 
   const loadMore = async () => {
     if (!pageInfo.hasNextPage || loading) return;
