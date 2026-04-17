@@ -30,6 +30,17 @@ const BlogPage = () => {
         loadBlogs();
     }, []);
 
+    // Force scroll libraries like Lenis to re-calculate document height after DOM changes
+    useEffect(() => {
+        if (!loading) {
+            const timer = setTimeout(() => {
+                window.dispatchEvent(new Event('resize'));
+            }, 150);
+            return () => clearTimeout(timer);
+        }
+    }, [loading, blogs.length, searchQuery]);
+
+
 
     const handleLoadMore = async () => {
         if (!pageInfo.hasNextPage) return;
