@@ -600,7 +600,14 @@ export default function CategoriesPage({ initialCollections = [] }) {
 
     // Derived unique filter options based on current category products
     const availableBrands = Array.from(new Set(currentProducts.map(p => p.node.vendor).filter(Boolean)));
-    const availableConditions = Array.from(new Set(currentProducts.map(p => p.node.productType).filter(Boolean)));
+    const availableConditions = Array.from(new Set(currentProducts.flatMap(p => {
+        const t = p.node.productType?.trim()?.toLowerCase() || "";
+        const conditions = [];
+        if (t === "new" || t === "both used & new" || t === "new-without box" || t === "new - without box") conditions.push("New");
+        if (t === "used" || t === "old" || t === "pre-owned" || t === "both used & new") conditions.push("Used");
+        if (t === "new-open box" || t === "new - open box" || t === "open box") conditions.push("Open Box");
+        return conditions;
+    }).filter(Boolean)));
     
     // Extract materials from metafields and valid tags (those not starting with #)
     const availableMaterials = Array.from(new Set(currentProducts.flatMap(p => {
@@ -621,7 +628,17 @@ export default function CategoriesPage({ initialCollections = [] }) {
     const filteredProducts = currentProducts.filter(item => {
         const node = item.node;
         const brandMatch = selectedBrands.length === 0 || selectedBrands.includes(node.vendor);
-        const conditionMatch = selectedConditions.length === 0 || selectedConditions.includes(node.productType);
+        
+        let conditionMatch = selectedConditions.length === 0;
+        if (!conditionMatch) {
+            const t = node.productType?.trim()?.toLowerCase() || "";
+            conditionMatch = selectedConditions.some(cond => {
+                if (cond === "New") return t === "new" || t === "both used & new" || t === "new-without box" || t === "new - without box";
+                if (cond === "Used") return t === "used" || t === "old" || t === "pre-owned" || t === "both used & new";
+                if (cond === "Open Box") return t === "new-open box" || t === "new - open box" || t === "open box";
+                return false;
+            });
+        }
         
         let materialMatch = true;
         if (selectedMaterials.length > 0) {

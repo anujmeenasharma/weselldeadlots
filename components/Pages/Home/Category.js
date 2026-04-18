@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from "@/components/AppLink";
-import { Zap, Wrench, Settings, Home, Laptop, Anchor, ShoppingBag, Recycle } from 'lucide-react';
+import { Zap, Wrench, Settings, Home, Laptop, Anchor, ShoppingBag, Droplets, Plane } from 'lucide-react';
 
 export const generateSlug = (name) => {
   return name.toLowerCase().replace(/ & /g, '-and-').replace(/\s+/g, '-');
@@ -11,250 +11,280 @@ export const generateSlug = (name) => {
 export default function Category() {
   const categories = [
     {
+      id: 'building-material',
+      name: 'Building Material',
+      icon: Home,
+      items: [
+        {
+          title: 'HVAC SYSTEM',
+          image: '/images/categories/hvac-systems.jpg',
+          link: '/categories/building-material/hvac-system'
+        },
+        {
+          title: 'FIRE & SAFETY',
+          image: '/images/categories/fire-and-safety.jpg',
+          link: '/categories/building-material/fire-and-safety'
+        },
+        {
+          title: 'SANITARY / PLUMBING SYSTEM',
+          image: '/images/categories/sanitary.jpg',
+          link: '/categories/building-material/sanitary-plumbing-system'
+        },
+        {
+          title: 'HARDWARE',
+          image: '/images/categories/co5.webp',
+          link: '/categories/building-material/hardware'
+        }
+      ]
+    },
+    {
       id: 'electrical',
       name: 'Electrical',
       icon: Zap,
       items: [
         {
-          title: 'SWITCH GEAR',
+          title: 'SWITCHGEAR',
           image: '/images/categories/Switchgear.jpg',
-          link: '/categories/electronic/switch-gear'
+          link: '/categories/electrical/switchgear'
         },
         {
-          title: 'AUTOMATION & CONTROL EQUIPMENTS',
+          title: 'AUTOMATION & PLC',
           image: '/images/categories/automation.jpg',
-          link: '/categories/electronic/automation-and-control-equipments'
+          link: '/categories/electrical/automation-and-plc'
         },
         {
-          title: 'WIRES & CABLES',
+          title: 'CABLES & WIRES',
           image: '/images/categories/cables.jpg',
-          link: '/categories/electronic/wires-and-cables'
+          link: '/categories/electrical/cables-and-wires'
         },
         {
-          title: 'SWITCH & SOCKETS',
+          title: 'SWITCHES & SOCKETS',
           image: '/images/categories/switchnsocket.jpg',
-          link: '/categories/electronic/switch-and-sockets'
+          link: '/categories/electrical/switches-and-sockets'
         },
         {
-          title: 'ELECTRONICS & LIGHTING',
+          title: 'LIGHTING',
           image: '/images/categories/Lighting.jpg',
-          link: '/categories/electronic/electronics-and-lighting'
+          link: '/categories/electrical/lighting'
+        },
+        {
+          title: 'ELECTRONICS',
+          image: '/images/categories/electronics.jpg', // Placeholder; uses existing pattern
+          link: '/categories/electrical/electronics'
         }
       ]
     },
-
     {
       id: 'tools',
       name: 'Tools',
       icon: Wrench,
       items: [
         {
-          title: 'HAND TOOLS',
-          image: '/images/categories/hand-tools.jpg',
-          link: '/categories/tools/hand-tools'
-        },
-        {
           title: 'POWER TOOLS',
           image: '/images/categories/power-tools-accessories.jpg',
           link: '/categories/tools/power-tools'
         },
         {
-          title: 'CUTTING TOOLS',
-          image: '/images/categories/other-tools.png',
-          link: '/categories/tools/cutting-tools'
+          title: 'HAND TOOLS',
+          image: '/images/categories/hand-tools.jpg',
+          link: '/categories/tools/hand-tools'
         },
         {
-          title: 'MEASURING TOOLS',
+          title: 'POWER TOOLS ACCESSORIES',
           image: '/images/categories/to4.webp',
-          link: '/categories/tools/measuring-tools'
+          link: '/categories/tools/power-tools-accessories'
         },
         {
-          title: 'FASTENING TOOLS',
-          image: '/images/categories/to5.webp',
-          link: '/categories/tools/fastening-tools'
+          title: 'OTHER TOOLS',
+          image: '/images/categories/other-tools.png',
+          link: '/categories/tools/other-tools'
         }
       ]
     },
-
     {
-      id: 'industrial',
+      id: 'industrial-equipment',
       name: 'Industrial Equipment',
       icon: Settings,
       items: [
         {
           title: 'MACHINERY',
           image: '/images/categories/machinery.jpg',
-          link: '/categories/industrial/machinery'
+          link: '/categories/industrial-equipment/machinery'
         },
         {
           title: 'BEARINGS',
           image: '/images/categories/bearings.jpg',
-          link: '/categories/industrial/bearings'
+          link: '/categories/industrial-equipment/bearings'
         },
         {
           title: 'HYDRAULIC COMPONENTS',
           image: '/images/categories/hydraulic-components.jpg',
-          link: '/categories/industrial/hydraulic-components'
+          link: '/categories/industrial-equipment/hydraulic-components'
         },
         {
           title: 'MOTORS',
           image: '/images/categories/motors.jpeg',
-          link: '/categories/industrial/motors'
+          link: '/categories/industrial-equipment/motors'
         },
         {
           title: 'GENERATORS',
           image: '/images/categories/generators.png',
-          link: '/categories/industrial/generators'
+          link: '/categories/industrial-equipment/generators'
         }
       ]
     },
-
     {
-      id: 'construction',
-      name: 'Building Material',
-      icon: Home,
+      id: 'oil-and-gas',
+      name: 'Oil & Gas',
+      icon: Droplets,
       items: [
         {
-          title: 'HVAC SYSTEMS',
-          image: '/images/categories/hvac-systems.jpg',
-          link: '/categories/construction/hvac-systems'
+          title: 'DRILLING EQUIPMENT',
+          image: '/images/categories/marine-navigation.jpg',
+          link: '/categories/oil-and-gas/drilling-equipment'
         },
         {
-          title: 'FIRE & SAFETY',
-          image: '/images/categories/fire-and-safety.jpg',
-          link: '/categories/construction/fire-and-safety'
+          title: 'VALVES & FLOW CONTROL',
+          image: '/images/categories/marine-safety.jpg',
+          link: '/categories/oil-and-gas/valves-and-flow-control'
         },
         {
-          title: 'BUILDING MATERIALS',
-          image: '/images/categories/co3.webp',
-          link: '/categories/construction/building-materials'
+          title: 'PUMPS & COMPRESSORS',
+          image: '/images/categories/motors.jpeg',
+          link: '/categories/oil-and-gas/pumps-and-compressors'
         },
         {
-          title: 'PLUMBING SYSTEMS',
-          image: '/images/categories/sanitary.jpg',
-          link: '/categories/plumbing-systems'
-        },
-        {
-          title: 'CONSTRUCTION TOOLS & EQUIPMENTS',
-          image: '/images/categories/co5.webp',
-          link: '/categories/construction/construction-tools-and-equipments'
+          title: 'MEASUREMENT & INSTRUMENTATION',
+          image: '/images/categories/automation.jpg',
+          link: '/categories/oil-and-gas/measurement-and-instrumentation'
         }
       ]
     },
-
     {
-      id: 'technology',
+      id: 'aerospace-and-aircraft-material',
+      name: 'Aerospace & Aircraft Material',
+      icon: Plane,
+      items: [
+        {
+          title: 'AIRCRAFT STRUCTURAL MATERIAL',
+          image: '/images/categories/marine-electrical.jpg',
+          link: '/categories/aerospace-and-aircraft-material/aircraft-structural-material'
+        },
+        {
+          title: 'AIRCRAFT FASTENERS',
+          image: '/images/categories/bearings.jpg',
+          link: '/categories/aerospace-and-aircraft-material/aircraft-fasteners'
+        },
+        {
+          title: 'AIRCRAFT ELECTRICAL COMPONENTS',
+          image: '/images/categories/Lighting.jpg',
+          link: '/categories/aerospace-and-aircraft-material/aircraft-electrical-components'
+        },
+        {
+          title: 'AIRCRAFT HYDRAULIC SYSTEM',
+          image: '/images/categories/hydraulic-components.jpg',
+          link: '/categories/aerospace-and-aircraft-material/aircraft-hydraulic-system'
+        },
+        {
+          title: 'AIRCRAFT MAINTENANCE MATERIAL',
+          image: '/images/categories/hand-tools.jpg',
+          link: '/categories/aerospace-and-aircraft-material/aircraft-maintenance-material'
+        }
+      ]
+    },
+    {
+      id: 'marine',
+      name: 'Marine',
+      icon: Anchor,
+      items: [
+        {
+          title: 'MARINE ENGINE SYSTEM',
+          image: '/images/categories/motors.jpeg',
+          link: '/categories/marine/marine-engine-system'
+        },
+        {
+          title: 'MARINE ELECTRICAL SYSTEM',
+          image: '/images/categories/marine-electrical.jpg',
+          link: '/categories/marine/marine-electrical-system'
+        },
+        {
+          title: 'MARINE NAVIGATION & COMMUNICATION',
+          image: '/images/categories/marine-navigation.jpg',
+          link: '/categories/marine/marine-navigation-and-communication'
+        },
+        {
+          title: 'MARINE SAFETY EQUIPMENT',
+          image: '/images/categories/marine-safety.jpg',
+          link: '/categories/marine/marine-safety-equipment'
+        },
+        {
+          title: 'DECK & MOORING EQUIPMENT',
+          image: '/images/categories/other-tools.png',
+          link: '/categories/marine/deck-and-mooring-equipment'
+        }
+      ]
+    },
+    {
+      id: 'computers-and-it',
       name: 'Computers & IT',
       icon: Laptop,
       items: [
         {
-          title: 'IT EQUIPMENTS',
+          title: 'COMPUTERS & LAPTOPS',
           image: '/images/categories/t1.webp',
-          link: '/categories/technology/it-equipments'
+          link: '/categories/computers-and-it/computers-and-laptops'
         },
         {
-          title: 'BATTERIES',
+          title: 'PC / LAPTOP ACCESSORIES',
+          image: '/images/categories/t3.webp',
+          link: '/categories/computers-and-it/pc-laptop-accessories'
+        },
+        {
+          title: 'BATTERY',
           image: '/images/categories/t2.webp',
-          link: '/categories/technology/batteries'
+          link: '/categories/computers-and-it/battery'
         },
         {
           title: 'NETWORKING DEVICES',
           image: '/images/categories/t3.webp',
-          link: '/categories/technology/networking-devices'
+          link: '/categories/computers-and-it/networking-devices'
         },
         {
           title: 'DATA STORAGE',
           image: '/images/categories/t4.webp',
-          link: '/categories/data-storage'
+          link: '/categories/computers-and-it/data-storage'
         }
       ]
     },
-
     {
-      id: 'maritime',
-      name: 'Maritime & Aviation',
-      icon: Anchor,
-      items: [
-        {
-          title: 'OIL & GAS EQUIPMENTS',
-          image: '/images/categories/marine-navigation.jpg',
-          link: '/categories/energy/oil-and-gas-equipments'
-        },
-        {
-          title: 'MARINE SUPPLIES',
-          image: '/images/categories/marine-safety.jpg',
-          link: '/categories/energy/marine-supplies'
-        },
-        {
-          title: 'AEROSPACE & AIRCRAFT MATERIALS',
-          image: '/images/categories/marine-electrical.jpg',
-          link: '/categories/energy/aerospace-and-aircraft-materials'
-        }
-      ]
-    },
-
-    {
-      id: 'consumer',
+      id: 'consumer-goods',
       name: 'Consumer Goods',
       icon: ShoppingBag,
       items: [
         {
           title: 'GARMENTS',
           image: '/images/categories/c1.webp',
-          link: '/categories/consumer/garments'
+          link: '/categories/consumer-goods/garments'
         },
         {
           title: 'COSMETICS & PERSONAL CARE',
           image: '/images/categories/cosmetics.jpg',
-          link: '/categories/consumer/cosmetics-and-personal-care'
+          link: '/categories/consumer-goods/cosmetics-and-personal-care'
         },
         {
           title: 'TOYS & GAMES',
           image: '/images/categories/toys.jpg',
-          link: '/categories/consumer/toys-and-games'
+          link: '/categories/consumer-goods/toys-and-games'
         },
         {
           title: 'KIDS ESSENTIALS',
           image: '/images/categories/kids-essentials.jpg',
-          link: '/categories/consumer/kids-essentials'
+          link: '/categories/consumer-goods/kids-essentials'
         },
         {
           title: 'FOOTWEAR',
           image: '/images/categories/footwear.jpg',
-          link: '/categories/consumer/footwear'
-        }
-      ]
-    },
-
-    {
-      id: 'scrap',
-      name: 'Recyclable Materials',
-      icon: Recycle,
-      items: [
-        {
-          title: 'GARMENTS',
-          image: '/images/categories/c1.webp',
-          link: '/categories/scrap-garments'
-        },
-        {
-          title: 'COSMETICS & PERSONAL CARE',
-          image: '/images/categories/c2.webp',
-          link: '/categories/scrap-cosmetics'
-        },
-        {
-          title: 'TOYS & GAMES',
-          image: '/images/categories/c3.webp',
-          link: '/categories/scrap-toys'
-        },
-        {
-          title: 'KIDS ESSENTIALS',
-          image: '/images/categories/c4.webp',
-          link: '/categories/scrap-kids'
-        },
-        {
-          title: 'FOOTWEAR',
-          image: '/images/categories/c5.webp',
-          link: '/categories/scrap-footwear'
+          link: '/categories/consumer-goods/footwear'
         }
       ]
     }
