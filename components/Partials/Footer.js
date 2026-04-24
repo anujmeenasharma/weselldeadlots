@@ -8,7 +8,7 @@ export default function Footer() {
     const quickLinks = [
         { name: 'Categories', href: '/categories' },
         { name: 'Contact Us', href: '/contact' },
-        { name: 'Sell With Us', href: '/sell' },
+        { name: 'Sell With Us', href: '/sell-with-us' },
         { name: 'Blogs', href: '/blogs' },
         { name: 'Terms & Condition', href: '/terms' },
         { name: 'Privacy Policy', href: '/privacy' },
