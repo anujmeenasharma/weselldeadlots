@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ProductCard from "../../UiComponents/ProductCard";
 import { fetchExploreLots } from "@/lib/shopify";
 
@@ -9,6 +9,14 @@ const ExploreAllLots = ({ initialProducts = [], initialPageInfo = { hasNextPage:
   const [pageInfo, setPageInfo] = useState(initialPageInfo);
   const [loading, setLoading] = useState(false);
   const [inventoryMap, setInventoryMap] = useState({});
+
+  // Fetch inventory for the initial (SSR) products on mount
+  useEffect(() => {
+    if (initialProducts.length > 0) {
+      batchFetchInventory(initialProducts);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const batchFetchInventory = async (edges) => {
     const variantIds = edges
