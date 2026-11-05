@@ -5,7 +5,7 @@
 }
 
 .bg-primary{
-  background: #1392f9;
+  background: var(--brand-primary, #1392f9);
 }
 
 .skiptranslate{

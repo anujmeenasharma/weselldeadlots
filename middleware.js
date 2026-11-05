@@ -1,8 +1,22 @@
 import { NextResponse } from 'next/server'
+import { SESSION_COOKIE, getSessionSecret, verifySessionToken } from './lib/admin/session'
 
-export function middleware(request) {
+export async function middleware(request) {
   const { pathname } = request.nextUrl;
-  
+
+  // Admin panel: everything except the login page requires a valid session.
+  if (pathname === '/admin' || pathname.startsWith('/admin/')) {
+    if (pathname === '/admin/login') return NextResponse.next();
+    const ok = await verifySessionToken(request.cookies.get(SESSION_COOKIE)?.value, getSessionSecret());
+    if (!ok) {
+      const url = new URL('/admin/login', request.url);
+      return NextResponse.redirect(url);
+    }
+    const response = NextResponse.next();
+    response.headers.set('X-Robots-Tag', 'noindex, nofollow');
+    return response;
+  }
+
   // If the path starts with /arabic (e.g., /arabic or /arabic/products)
   if (pathname.startsWith('/arabic')) {
     // Exclude API, static assets, etc. just in case config matcher misses
@@ -11,20 +25,20 @@ export function middleware(request) {
     }
 
     const targetPath = pathname.replace(/^\/arabic/, '') || '/';
-    
+
     // We rewrite to the internal route, but preserve the URL for the user
     // e.g. /arabic/product/123 -> /product/123 under the hood
     const response = NextResponse.rewrite(new URL(targetPath, request.url));
-    
+
     // Pass headers down to layout.js so it can set RTL immediately
     response.headers.set('x-locale', 'ar');
-    
+
     // Enforce the translation cookie so GTranslate catches on automatically
     response.cookies.set('googtrans', '/en/ar', { path: '/' });
-    
+
     return response;
   }
-  
+
   // For all routes not mapped to /arabic, we assume English
   const response = NextResponse.next();
   response.headers.set('x-locale', 'en');

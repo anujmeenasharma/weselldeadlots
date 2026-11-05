@@ -1,6 +1,8 @@
 import { fetchBlogData, fetchExploreLots } from '@/lib/shopify';
+import { getSitemapPages, getSitemapPosts } from '@/sanity/lib/content';
+import { siteUrl } from '@/sanity/env';
 
-const BASE_URL = 'https://weselldeadlots.com';
+const BASE_URL = siteUrl;
 
 export default async function sitemap() {
     const staticRoutes = [
@@ -39,18 +41,6 @@ export default async function sitemap() {
             lastModified: new Date(),
             changeFrequency: 'monthly',
             priority: 0.6,
-        },
-        {
-            url: `${BASE_URL}/privacy`,
-            lastModified: new Date(),
-            changeFrequency: 'yearly',
-            priority: 0.3,
-        },
-        {
-            url: `${BASE_URL}/terms`,
-            lastModified: new Date(),
-            changeFrequency: 'yearly',
-            priority: 0.3,
         },
     ];
 
@@ -100,5 +90,25 @@ export default async function sitemap() {
         blogRoutes = [];
     }
 
-    return [...staticRoutes, ...productRoutes, ...blogRoutes];
+    // CMS pages (e.g. /privacy, /terms and any page created in Sanity).
+    const yearly = new Set(['privacy', 'terms']);
+    const cmsPageRoutes = (await getSitemapPages()).map((page) => ({
+        url: `${BASE_URL}/${page.slug}`,
+        lastModified: page._updatedAt ? new Date(page._updatedAt) : new Date(),
+        changeFrequency: yearly.has(page.slug) ? 'yearly' : 'monthly',
+        priority: yearly.has(page.slug) ? 0.3 : 0.6,
+    }));
+
+    // Blog posts written in Sanity (Shopify articles are listed above).
+    const seen = new Set(blogRoutes.map((r) => r.url));
+    const cmsBlogRoutes = (await getSitemapPosts())
+        .map((post) => ({
+            url: `${BASE_URL}/blogs/${post.slug}`,
+            lastModified: new Date(post.updatedAt || post.publishedAt || post._updatedAt),
+            changeFrequency: 'monthly',
+            priority: 0.6,
+        }))
+        .filter((r) => !seen.has(r.url));
+
+    return [...staticRoutes, ...cmsPageRoutes, ...productRoutes, ...blogRoutes, ...cmsBlogRoutes];
 }

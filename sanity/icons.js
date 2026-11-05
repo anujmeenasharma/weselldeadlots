@@ -1,0 +1,31 @@
+// @sanity/icons v5 exposes icons as a keyed map; re-export the ones the Studio uses.
+import { icons } from "@sanity/icons";
+
+export const CogIcon = icons.cog;
+export const MenuIcon = icons.menu;
+export const BlockElementIcon = icons["block-element"];
+export const HomeIcon = icons.home;
+export const EnvelopeIcon = icons.envelope;
+export const UploadIcon = icons.upload;
+export const ComposeIcon = icons.compose;
+export const DocumentsIcon = icons.documents;
+export const EditIcon = icons.edit;
+export const DocumentIcon = icons.document;
+export const LinkIcon = icons.link;
+export const SearchIcon = icons.search;
+export const HelpCircleIcon = icons["help-circle"];
+export const ImageIcon = icons.image;
+export const TagIcon = icons.tag;
+export const UserIcon = icons.user;
+export const BlockContentIcon = icons["block-content"];
+export const BulbOutlineIcon = icons["bulb-outline"];
+export const CommentIcon = icons.comment;
+export const DocumentTextIcon = icons["document-text"];
+export const ImagesIcon = icons.images;
+export const BasketIcon = icons.basket;
+export const PlayIcon = icons.play;
+export const StarIcon = icons.star;
+export const TagsIcon = icons.tags;
+export const ThListIcon = icons["th-list"];
+export const ChartUpwardIcon = icons["chart-upward"];
+export const MasterDetailIcon = icons["master-detail"];

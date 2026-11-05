@@ -3,8 +3,16 @@ import { useState, useEffect } from "react";
 import ProductCard from "../../UiComponents/ProductCard";
 import { fetchExploreLots } from "@/lib/shopify";
 
-// Initial products are server-side rendered — only "Load More" fetches client-side
-const ExploreAllLots = ({ initialProducts = [], initialPageInfo = { hasNextPage: false, endCursor: null } }) => {
+// Initial products are server-side rendered — only "Load More" fetches client-side.
+// Heading, page size and button labels come from the Sanity "All products grid" section.
+const ExploreAllLots = ({
+  initialProducts = [],
+  initialPageInfo = { hasNextPage: false, endCursor: null },
+  heading,
+  pageSize = 25,
+  loadMoreLabel = "Load More",
+  loadingLabel = "Loading...",
+}) => {
   const [products, setProducts] = useState(initialProducts);
   const [pageInfo, setPageInfo] = useState(initialPageInfo);
   const [loading, setLoading] = useState(false);
@@ -38,7 +46,7 @@ const ExploreAllLots = ({ initialProducts = [], initialPageInfo = { hasNextPage:
     if (!pageInfo.hasNextPage || loading) return;
     setLoading(true);
     try {
-      const data = await fetchExploreLots(25, pageInfo.endCursor);
+      const data = await fetchExploreLots(pageSize, pageInfo.endCursor);
       setProducts(prev => [...prev, ...data.edges]);
       setPageInfo(data.pageInfo);
       batchFetchInventory(data.edges);
@@ -51,7 +59,9 @@ const ExploreAllLots = ({ initialProducts = [], initialPageInfo = { hasNextPage:
 
   return (
     <div className="min-h-screen w-full relative pt-[15vh] pb-20 px-4 md:px-[5vw] lg:px-[5vw]">
-      <h1 className="text-4xl md:text-[5vw] lg:text-5xl xl:text-6xl text-center pb-10 md:pb-[6vw]">Explore All Lots</h1>
+      {heading && (
+        <h1 className="text-4xl md:text-[5vw] lg:text-5xl xl:text-6xl text-center pb-10 md:pb-[6vw]">{heading}</h1>
+      )}
       <div className="flex flex-wrap gap-[4vw] lg:gap-[2vw] justify-center">
         {products.map((product, index) => {
           const variantId = product.node?.variants?.edges?.[0]?.node?.id?.split('/').pop();
@@ -66,7 +76,7 @@ const ExploreAllLots = ({ initialProducts = [], initialPageInfo = { hasNextPage:
             disabled={loading}
             className="border-2 border-black rounded-lg text-lg md:text-[1.8vw] lg:text-[1.2vw] font-bold py-3 px-10 md:py-[1.2vw] md:px-[4vw] hover:bg-black hover:text-white transition-colors disabled:opacity-50"
           >
-            {loading ? "Loading..." : "Load More"}
+            {loading ? loadingLabel : loadMoreLabel}
           </button>
         </div>
       )}

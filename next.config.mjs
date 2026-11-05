@@ -14,6 +14,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'cdn.shopify.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'cdn.sanity.io',
+      },
     ],
   },
   async rewrites() {
@@ -27,11 +31,21 @@ const nextConfig = {
   async headers() {
     return [
       {
-        source: '/(.*)',
+        // Everything except the Studio is indexable.
+        source: '/((?!studio).*)',
         headers: [
           {
             key: 'X-Robots-Tag',
             value: 'index, follow',
+          },
+        ],
+      },
+      {
+        source: '/studio/:path*',
+        headers: [
+          {
+            key: 'X-Robots-Tag',
+            value: 'noindex, nofollow',
           },
         ],
       },

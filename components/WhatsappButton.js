@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 
-export default function WhatsAppButton() {
+export default function WhatsAppButton({ number, message }) {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
@@ -12,11 +12,15 @@ export default function WhatsAppButton() {
     return () => clearTimeout(timer);
   }, []);
 
-  if (!show) return null;
+  // Number and message come from Website Settings; no number = no button.
+  const digits = (number || "").replace(/[^0-9]/g, "");
+  if (!show || !digits) return null;
+
+  const href = `https://wa.me/+${digits}${message ? `?text=${encodeURIComponent(message)}` : ""}`;
 
   return (
     <a
-      href="https://wa.me/+971552748974?text=Hello%20I%20want%20to%20know%20more"
+      href={href}
       target="_blank"
       rel="noopener noreferrer"
       className="fixed bottom-6 right-6 z-50 group"

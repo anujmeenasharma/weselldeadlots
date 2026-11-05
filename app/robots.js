@@ -1,13 +1,15 @@
+import { siteUrl } from '@/sanity/env';
+
 export default function robots() {
     return {
         rules: [
             {
                 userAgent: '*',
                 allow: '/',
-                disallow: ['/api/', '/_next/'],
+                disallow: ['/api/', '/_next/', '/studio'],
             },
         ],
-        sitemap: 'https://weselldeadlots.com/sitemap.xml',
-        host: 'https://weselldeadlots.com',
+        sitemap: `${siteUrl}/sitemap.xml`,
+        host: siteUrl,
     };
 }
