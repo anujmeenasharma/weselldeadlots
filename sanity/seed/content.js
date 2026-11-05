@@ -52,6 +52,8 @@ export const siteSettings = {
   phone: "+971 55 274 8974",
   whatsappNumber: "971552748974",
   whatsappMessage: "Hello I want to know more",
+  whatsappChannelUrl: "",
+  whatsappChannelLabel: "",
   address: {
     displayText: "Industrial Area 3, Sharjah, UAE.",
     street: "Street no:19 - Industrial Area 3",
@@ -319,6 +321,7 @@ export const homePage = {
         showDivider: true,
         exploreImage: img("/icons/explore.svg", "Explore"),
         exploreLink: "#categories",
+        showChannelQr: true,
         parallax: true,
         hidden: false,
       },

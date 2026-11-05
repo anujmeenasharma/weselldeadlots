@@ -21,6 +21,8 @@ import GoogleTranslate from "@/components/GoogleTranslate";
 import { getFooter, getNavigation, getSiteSettings } from "@/sanity/lib/content";
 import { buildRootMetadata } from "@/sanity/lib/metadata";
 import { HEX_COLOR } from "@/sanity/lib/validation";
+import { qrSvg } from "@/lib/qr";
+import { whatsappQrTarget } from "@/lib/whatsapp";
 
 export async function generateMetadata() {
   return buildRootMetadata(await getSiteSettings());
@@ -89,6 +91,8 @@ export default async function RootLayout({ children }) {
     draftMode(),
   ]);
   const brandCss = brandStyle(settings);
+  const whatsappQr = whatsappQrTarget(settings);
+  const whatsappQrSvg = whatsappQr ? await qrSvg(whatsappQr.url) : null;
 
   return (
     <html lang="en" dir={dir}>
@@ -124,7 +128,11 @@ export default async function RootLayout({ children }) {
           <Navbar navigation={navigation} settings={settings} />
           {children}
           <Footer footer={footer} settings={settings} />
-          <WhatsAppButton number={settings?.whatsappNumber} message={settings?.whatsappMessage} />
+          <WhatsAppButton
+            number={settings?.whatsappNumber}
+            message={settings?.whatsappMessage}
+            qr={whatsappQr && whatsappQrSvg ? { ...whatsappQr, svg: whatsappQrSvg } : null}
+          />
         </ClientLayout>
         {draft.isEnabled && <VisualEditing />}
       </body>

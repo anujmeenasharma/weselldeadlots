@@ -18,15 +18,14 @@ import {
   Video,
 } from "./sections/ContentSections";
 import { fetchExploreLots, fetchTodaysDeals } from "@/lib/shopify";
+import { qrSvg } from "@/lib/qr";
+import { whatsappQrTarget } from "@/lib/whatsapp";
 
-function Hero({ section }) {
-  return section.parallax === false ? (
-    <Landing section={section} />
-  ) : (
-    <HeroParallax>
-      <Landing section={section} />
-    </HeroParallax>
-  );
+async function Hero({ section, settings }) {
+  const target = section.showChannelQr !== false ? whatsappQrTarget(settings) : null;
+  const channelQr = target ? { ...target, svg: await qrSvg(target.url) } : null;
+  const landing = <Landing section={section} channelQr={channelQr?.svg ? channelQr : null} />;
+  return section.parallax === false ? landing : <HeroParallax>{landing}</HeroParallax>;
 }
 
 async function ProductCarouselSection({ section }) {

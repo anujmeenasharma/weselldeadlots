@@ -76,6 +76,14 @@ export const heroSection = defineType({
       fieldset: "explore",
     }),
     defineField({
+      name: "showChannelQr",
+      title: "Show WhatsApp QR code",
+      type: "boolean",
+      initialValue: true,
+      fieldset: "explore",
+      description: "Replaces the Explore button. Opens a chat with the WhatsApp number (or the channel, if set) in Website Settings.",
+    }),
+    defineField({
       name: "parallax",
       title: "Scroll parallax effect",
       type: "boolean",

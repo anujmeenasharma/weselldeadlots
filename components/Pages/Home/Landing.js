@@ -4,7 +4,7 @@ import { fileUrl, imageAlt, imageUrl } from "@/sanity/lib/image";
 import { safeHref } from "@/sanity/lib/links";
 
 // Hero content comes from the Sanity "Hero" section.
-const Landing = ({ section = {} }) => {
+const Landing = ({ section = {}, channelQr = null }) => {
     const videoSrc = safeHref(fileUrl(section.backgroundVideo) || section.backgroundVideoUrl);
     const backgroundSrc = imageUrl(section.backgroundImage, { width: 1920 });
     const exploreSrc = imageUrl(section.exploreImage, { width: 400 });
@@ -48,8 +48,8 @@ const Landing = ({ section = {} }) => {
                 </div>
             </div>
 
-            {/* Explore Button */}
-            {exploreSrc && exploreHref && (
+            {/* Explore Button — replaced by the WhatsApp channel QR when a channel link is set */}
+            {!channelQr && exploreSrc && exploreHref && (
                 <Link href={exploreHref} className="absolute top-1/2 end-4 md:end-[5vw] lg:end-[5vw] -translate-y-1/2 hidden md:block hover:scale-105 transition-transform duration-300">
                     <Image
                         className="w-24 h-24 md:w-[16vw] md:h-[16vw] lg:w-[12vw] lg:h-[12vw]"
@@ -59,6 +59,28 @@ const Landing = ({ section = {} }) => {
                         alt={imageAlt(section.exploreImage, "Explore")}
                     />
                 </Link>
+            )}
+
+            {/* WhatsApp QR (chat, or channel if set), in the Explore button's place (desktop/tablet) */}
+            {channelQr && (
+                <a
+                    href={channelQr.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="absolute end-4 md:end-[5vw] lg:end-[5vw] top-1/2 -translate-y-1/2 hidden md:flex w-[18vw] lg:w-[13vw] flex-col items-center gap-2 rounded-2xl bg-white/95 p-[1vw] lg:p-[0.8vw] text-center shadow-lg hover:scale-105 transition-transform duration-300"
+                    aria-label={channelQr.label}
+                >
+                    <span
+                        className="block w-full aspect-square [&>svg]:h-full [&>svg]:w-full"
+                        dangerouslySetInnerHTML={{ __html: channelQr.svg }}
+                    />
+                    <span className="flex items-center gap-1.5 text-[1.4vw] lg:text-[0.85vw] font-semibold leading-tight text-gray-900">
+                        <svg viewBox="0 0 32 32" className="h-[1.6vw] w-[1.6vw] lg:h-[1vw] lg:w-[1vw] shrink-0" fill="#22c55e" aria-hidden="true">
+                            <path d="M16 .4C7.2.4 0 7.6 0 16.4c0 2.9.8 5.7 2.2 8.2L.1 32l7.6-2.1A16 16 0 1 0 16 .4z" />
+                        </svg>
+                        {channelQr.label}
+                    </span>
+                </a>
             )}
         </div>
     )

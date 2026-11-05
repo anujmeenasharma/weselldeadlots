@@ -58,6 +58,20 @@ export const siteSettings = defineType({
     }),
     defineField({ name: "whatsappMessage", title: "WhatsApp pre-filled message", type: "string", group: "contact" }),
     defineField({
+      name: "whatsappChannelUrl",
+      title: "WhatsApp channel link (optional)",
+      type: "url",
+      group: "contact",
+      description: "If set, the website QR codes open this channel instead of a chat with the WhatsApp number.",
+      validation: (Rule) => Rule.uri({ scheme: ["https"] }),
+    }),
+    defineField({
+      name: "whatsappChannelLabel",
+      title: "Text under the WhatsApp QR code",
+      type: "string",
+      group: "contact",
+    }),
+    defineField({
       name: "address",
       title: "Address",
       type: "object",
