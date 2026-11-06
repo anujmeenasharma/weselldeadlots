@@ -66,7 +66,7 @@ const ExploreAllLots = ({
         {products.map((product, index) => {
           const variantId = product.node?.variants?.edges?.[0]?.node?.id?.split('/').pop();
           const qty = variantId ? inventoryMap[variantId] : undefined;
-          return <ProductCard key={product.node?.id || index} product={product.node} exactQuantity={qty ?? null} />;
+          return <ProductCard key={product.node?.id || index} product={product.node} exactQuantity={qty} />;
         })}
       </div>
       {pageInfo.hasNextPage && (

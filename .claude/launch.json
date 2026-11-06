@@ -4,7 +4,12 @@
     {
       "name": "next-start",
       "runtimeExecutable": "npx",
-      "runtimeArgs": ["next", "start", "-p", "3100"],
+      "runtimeArgs": [
+        "next",
+        "start",
+        "-p",
+        "3100"
+      ],
       "port": 3100
     }
   ]

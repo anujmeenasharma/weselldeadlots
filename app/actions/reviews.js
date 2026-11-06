@@ -1,9 +1,10 @@
 "use server";
 
+import { getShopifyAdminToken } from '@/lib/shopifyAdminToken';
 import { revalidatePath } from "next/cache";
 
 export async function submitProductReview(productId, handle, reviewData) {
-    const adminToken = process.env.SHOPIFY_ADMIN_API_ACCESS_TOKEN;
+    const adminToken = await getShopifyAdminToken();
     const storeUrl = process.env.NEXT_PUBLIC_SHOPIFY_STORE_URL;
     
     if (!adminToken || !storeUrl) {

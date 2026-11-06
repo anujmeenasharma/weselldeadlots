@@ -1,3 +1,4 @@
+import { getShopifyAdminToken } from '@/lib/shopifyAdminToken';
 import { NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
@@ -10,7 +11,7 @@ export async function GET(request) {
         return NextResponse.json({ quantity: null }, { status: 400 });
     }
 
-    const adminToken = process.env.SHOPIFY_ADMIN_API_ACCESS_TOKEN;
+    const adminToken = await getShopifyAdminToken();
     const storeUrl = process.env.NEXT_PUBLIC_SHOPIFY_STORE_URL;
     const apiVersion = process.env.NEXT_PUBLIC_SHOPIFY_API_VERSION || '2024-04';
 

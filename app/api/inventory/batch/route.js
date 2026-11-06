@@ -1,3 +1,4 @@
+import { getShopifyAdminToken } from '@/lib/shopifyAdminToken';
 import { NextResponse } from 'next/server';
 
 const cache = new Map();
@@ -25,16 +26,23 @@ export async function POST(request) {
         return NextResponse.json({ quantities: {} }, { status: 400 });
     }
 
-    const adminToken = process.env.SHOPIFY_ADMIN_API_ACCESS_TOKEN;
+    const adminToken = await getShopifyAdminToken();
     const storeUrl = process.env.NEXT_PUBLIC_SHOPIFY_STORE_URL;
     const apiVersion = process.env.NEXT_PUBLIC_SHOPIFY_API_VERSION || '2024-04';
 
+    // Unknown quantities are returned as null so the UI can stop showing "Checking..."
+    const allUnknown = () => Object.fromEntries(variantIds.map((id) => [id, null]));
+
     if (!adminToken || !storeUrl) {
-        return NextResponse.json({ quantities: {} }, { status: 500 });
+        return NextResponse.json({ quantities: allUnknown() });
     }
 
     const result = {};
     const toFetch = [];
+    const markUnknown = () => {
+        for (const id of toFetch) result[id] = null;
+        return NextResponse.json({ quantities: result });
+    };
 
     for (const id of variantIds) {
         const cached = getCached(id);
@@ -73,13 +81,15 @@ export async function POST(request) {
         );
 
         if (!response.ok) {
-            return NextResponse.json({ quantities: result });
+            console.error('[inventory] Shopify Admin API error', response.status);
+            return markUnknown();
         }
 
         const data = await response.json();
 
         if (data.errors) {
-            return NextResponse.json({ quantities: result });
+            console.error('[inventory] Shopify Admin API error', JSON.stringify(data.errors));
+            return markUnknown();
         }
 
         for (const id of toFetch) {
@@ -93,7 +103,8 @@ export async function POST(request) {
                 'Cache-Control': 'public, max-age=120, stale-while-revalidate=60',
             }
         });
-    } catch {
-        return NextResponse.json({ quantities: result });
+    } catch (err) {
+        console.error('[inventory] fetch failed', err);
+        return markUnknown();
     }
 }

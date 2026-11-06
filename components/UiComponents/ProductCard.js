@@ -99,7 +99,9 @@ const ProductCard = ({ product, exactQuantity }) => {
           <h1 className="font-semibold line-clamp-2 min-h-[3rem] hover:text-blue-600 transition-colors" title={title}>{title}</h1>
         </Link>
         <div className="flex flex-wrap gap-2 text-xs">
-          <span className="px-3 py-1 bg-blue-50 text-blue-500 rounded-full">Qty: {exactQuantity !== null ? exactQuantity : "Checking..."} {unit}</span>
+          {exactQuantity !== null && (
+            <span className="px-3 py-1 bg-blue-50 text-blue-500 rounded-full">Qty: {exactQuantity === undefined ? "Checking..." : exactQuantity} {unit}</span>
+          )}
           <span className="px-3 py-1 bg-gray-50 text-gray-500 rounded-full">{vendor}</span>
           {modelNo !== "N/A" && <span className="px-3 py-1 bg-purple-50 text-purple-500 rounded-full">Model: {modelNo}</span>}
         </div>

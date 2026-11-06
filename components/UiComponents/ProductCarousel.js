@@ -86,7 +86,7 @@ const ProductCarousel = ({ products }) => {
                     const qty = variantId ? inventoryMap[variantId] : undefined;
                     return (
                         <SwiperSlide key={edge.node.id} className="flex justify-center pb-10 px-2">
-                            <ProductCard product={edge.node} exactQuantity={qty ?? null} />
+                            <ProductCard product={edge.node} exactQuantity={qty} />
                         </SwiperSlide>
                     );
                 })}

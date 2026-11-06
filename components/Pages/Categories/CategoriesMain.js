@@ -393,9 +393,11 @@ const ProductCard = ({ product: { node }, exactQuantity }) => {
                 </Link>
 
                 <div className="flex flex-wrap gap-2 mb-4">
-                    <span className="bg-blue-50 text-blue-500 text-[10px] px-2 py-1 rounded-md font-medium whitespace-nowrap">
-                        Qty: {exactQuantity !== null ? exactQuantity : "Checking..."} {isUnitKg ? 'KG' : 'Pcs'}
-                    </span>
+                    {exactQuantity !== null && (
+                        <span className="bg-blue-50 text-blue-500 text-[10px] px-2 py-1 rounded-md font-medium whitespace-nowrap">
+                            Qty: {exactQuantity === undefined ? "Checking..." : exactQuantity} {isUnitKg ? 'KG' : 'Pcs'}
+                        </span>
+                    )}
                     <span className="bg-blue-50 text-blue-500 text-[10px] px-2 py-1 rounded-md font-medium whitespace-nowrap">
                         Model: {modelNo}
                     </span>
@@ -904,7 +906,7 @@ export default function CategoriesPage({ initialCollections = [] }) {
                                         displayedProducts.map((product) => {
                                             const variantId = product.node.variants?.edges?.[0]?.node?.id?.split('/').pop();
                                             const qty = variantId != null ? inventoryMap[variantId] : undefined;
-                                            return <ProductCard key={product.node.id} product={product} exactQuantity={qty ?? null} />;
+                                            return <ProductCard key={product.node.id} product={product} exactQuantity={qty} />;
                                         })
                                     ) : (
                                         <div className="col-span-full flex flex-col items-center justify-center py-20 text-gray-500">

@@ -1,11 +1,12 @@
 
+import { getShopifyAdminToken } from '@/lib/shopifyAdminToken';
 import { fetchProductByHandle, fetchProductRecommendations } from '@/lib/shopify';
 
 // Revalidate product pages every 5 minutes
 export const revalidate = 300;
 
 async function fetchAdminInventory(variantId) {
-    const adminToken = process.env.SHOPIFY_ADMIN_API_ACCESS_TOKEN;
+    const adminToken = await getShopifyAdminToken();
     const storeUrl = process.env.NEXT_PUBLIC_SHOPIFY_STORE_URL;
     if (!adminToken || !storeUrl || !variantId) return null;
 
@@ -29,7 +30,7 @@ async function fetchAdminInventory(variantId) {
 // Storefront API cannot read custom metafields unless explicitly exposed in Shopify Admin.
 // We fetch reviews directly from the Admin API to guarantee access.
 async function fetchAdminReviews(productId) {
-    const adminToken = process.env.SHOPIFY_ADMIN_API_ACCESS_TOKEN;
+    const adminToken = await getShopifyAdminToken();
     const storeUrl = process.env.NEXT_PUBLIC_SHOPIFY_STORE_URL;
     if (!adminToken || !storeUrl || !productId) return [];
 
