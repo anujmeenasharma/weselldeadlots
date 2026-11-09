@@ -1,6 +1,7 @@
 
 import { getShopifyAdminToken } from '@/lib/shopifyAdminToken';
 import { fetchProductByHandle, fetchProductRecommendations } from '@/lib/shopify';
+import { PRODUCT_WHATSAPP_NUMBER, whatsappChatUrl } from "@/lib/whatsapp";
 
 // Revalidate product pages every 5 minutes
 export const revalidate = 300;
@@ -117,7 +118,7 @@ export default async function ProductPage({ params }) {
     const isAvailable = product.availableForSale;
     const productUrl = `https://www.weselldeadlots.com/product/${handle}`;
     const whatsappMessage = `Hello, I want to buy ${product.title} with model number ${modelNo}. Here is the link of the product: ${productUrl}`;
-    const whatsappLink = `https://wa.me/+971552748974?text=${encodeURIComponent(whatsappMessage)}`;
+    const whatsappLink = whatsappChatUrl(PRODUCT_WHATSAPP_NUMBER, whatsappMessage);
 
     return (
         <div className="bg-white min-h-screen pb-20 pt-32">

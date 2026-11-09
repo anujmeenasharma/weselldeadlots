@@ -6,6 +6,7 @@ import Link from "@/components/AppLink";
 import { useRouter, useSearchParams, useParams } from 'next/navigation';
 import { ChevronDown, ChevronRight, ChevronLeft, Search, Filter, X } from 'lucide-react';
 import { FaWhatsapp } from 'react-icons/fa';
+import { PRODUCT_WHATSAPP_NUMBER, whatsappChatUrl } from "@/lib/whatsapp";
 
 
 
@@ -408,7 +409,7 @@ const ProductCard = ({ product: { node }, exactQuantity }) => {
                         Dhs. <span className="text-xl font-bold text-black">{parseFloat(price).toFixed(0)}</span> {currency}
                     </div>
                     <a
-                        href={`https://wa.me/+971552748974?text=Hello, I want to buy ${encodeURIComponent(node.title)} with model number ${encodeURIComponent(modelNo)}`}
+                        href={whatsappChatUrl(PRODUCT_WHATSAPP_NUMBER, `Hello, I want to buy ${node.title} with model number ${modelNo}`)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="bg-[#1392f9] hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors"

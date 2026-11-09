@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "@/components/AppLink";
 import { FaWhatsapp } from "react-icons/fa";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { PRODUCT_WHATSAPP_NUMBER, whatsappChatUrl } from "@/lib/whatsapp";
 
 const ProductCard = ({ product, exactQuantity }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -33,7 +34,7 @@ const ProductCard = ({ product, exactQuantity }) => {
   const handle = product.handle;
   const productUrl = `/product/${handle}`;
   const whatsappMessage = `Hello, I want to buy ${title} with model number ${modelNo}. Here is the link of the product: https://www.weselldeadlots.com/product/${handle}`;
-  const whatsappLink = `https://wa.me/+971552748974?text=${encodeURIComponent(whatsappMessage)}`;
+  const whatsappLink = whatsappChatUrl(PRODUCT_WHATSAPP_NUMBER, whatsappMessage);
 
 
   const nextImage = (e) => {
