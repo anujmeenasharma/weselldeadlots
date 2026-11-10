@@ -4,6 +4,9 @@ import { siteUrl } from '@/sanity/env';
 
 const BASE_URL = siteUrl;
 
+// Rebuild the sitemap at most once an hour.
+export const revalidate = 3600;
+
 export default async function sitemap() {
     const staticRoutes = [
         {
